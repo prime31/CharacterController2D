@@ -78,7 +78,9 @@ public class CharacterController2D : MonoBehaviour
 	[Range( 0, 90f )]
 	public float slopeLimit = 30f;
 
-	// curve for multiplying speed based on slope (negative = downwards)
+	/// <summary>
+	/// curve for multiplying speed based on slope (negative = downwards)
+	/// </summary>
 	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
 
 	[Range( 2, 20 )]
@@ -104,11 +106,13 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
-	/// Holder for our raycast origin corners (TR, TL, BR, BL)
+	/// holder for our raycast origin corners (TR, TL, BR, BL)
 	/// </summary>
 	private CharacterRaycastOrigins _raycastOrigins;
 
-	// stores our raycast hit during movement to avoid allocations
+	/// <summary>
+	/// stores our raycast hit during movement
+	/// </summary>
 	private RaycastHit2D _raycastHit;
 
 	// horizontal/vertical movement data
@@ -127,7 +131,7 @@ public class CharacterController2D : MonoBehaviour
 		transform = GetComponent<Transform>();
 		boxCollider = GetComponent<BoxCollider2D>();
 
-		// figure out how many rays shall we cast and create our arrays
+		// figure out the distance between our rays in both directions
 		// horizontal
 		var colliderUseableHeight = boxCollider.size.y * Mathf.Abs( transform.localScale.y ) - ( 2f * skinWidth );
 		_verticalDistanceBetweenRays = colliderUseableHeight / ( totalHorizontalRays - 1 );
@@ -243,7 +247,7 @@ public class CharacterController2D : MonoBehaviour
 		if( angle < slopeLimit )
 		{
 			// we only need to adjust the y movement if we are not jumping
-			// TODO: this uses a magic number which isn't ideal
+			// TODO: this uses a magic number which isn't ideal!
 			if( deltaMovement.y < 0.07f )
 			{
 				// apply the slopeModifier. perhaps we should divide by deltaTime then modify the speed and multiply
