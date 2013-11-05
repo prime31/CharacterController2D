@@ -80,8 +80,6 @@ public class PlayerTester : MonoBehaviour
 		// apply gravity before moving
 		velocity.y += gravity * Time.deltaTime;
 
-		transform.parent = null;
-
 		_controller.move( velocity * Time.deltaTime );
 	}
 
