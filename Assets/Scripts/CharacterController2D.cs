@@ -161,7 +161,7 @@ public class CharacterController2D : MonoBehaviour
 	/// <param name="deltaMovement">Delta movement.</param>
 	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
 	{
-		var scaledColliderSize = new Vector2( boxCollider.size.x * transform.localScale.x, boxCollider.size.y * transform.localScale.y ) / 2;
+		var scaledColliderSize = new Vector2( boxCollider.size.x * Mathf.Abs( transform.localScale.x ), boxCollider.size.y * Mathf.Abs( transform.localScale.y ) ) / 2;
 
 		_raycastOrigins.topRight = transform.position + new Vector3( scaledColliderSize.x, scaledColliderSize.y );
 		_raycastOrigins.topRight.x -= skinWidth;
