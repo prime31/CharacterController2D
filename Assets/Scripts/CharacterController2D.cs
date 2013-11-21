@@ -32,18 +32,18 @@ public class CharacterController2D : MonoBehaviour
 		public bool above;
 		public bool below;
 		public bool becameGroundedThisFrame;
-		
-		
+
+
 		public void reset()
 		{
 			right = left = above = below = becameGroundedThisFrame = false;
 		}
-		
-		
+
+
 		public override string ToString()
 		{
 			return string.Format( "[CharacterCollisionState2D] r: {0}, l: {1}, a: {2}, b: {3}", right, left, above, below );
-		}	
+		}
 	}
 
 	#endregion
@@ -161,19 +161,21 @@ public class CharacterController2D : MonoBehaviour
 	/// <param name="deltaMovement">Delta movement.</param>
 	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
 	{
-		_raycastOrigins.topRight = transform.position + new Vector3( boxCollider.size.x, boxCollider.size.y );
+		var scaledColliderSize = new Vector2( boxCollider.size.x * transform.localScale.x, boxCollider.size.y * transform.localScale.y ) / 2;
+
+		_raycastOrigins.topRight = transform.position + new Vector3( scaledColliderSize.x, scaledColliderSize.y );
 		_raycastOrigins.topRight.x -= skinWidth;
 		_raycastOrigins.topRight.y -= skinWidth;
 
-		_raycastOrigins.topLeft = transform.position + new Vector3( -boxCollider.size.x, boxCollider.size.y );
+		_raycastOrigins.topLeft = transform.position + new Vector3( -scaledColliderSize.x, scaledColliderSize.y );
 		_raycastOrigins.topLeft.x += skinWidth;
 		_raycastOrigins.topLeft.y -= skinWidth;
 
-		_raycastOrigins.bottomRight = transform.position + new Vector3( boxCollider.size.x, -boxCollider.size.y );
+		_raycastOrigins.bottomRight = transform.position + new Vector3( scaledColliderSize.x, -scaledColliderSize.y );
 		_raycastOrigins.bottomRight.x -= skinWidth;
 		_raycastOrigins.bottomRight.y += skinWidth;
 
-		_raycastOrigins.bottomLeft = transform.position + new Vector3( -boxCollider.size.x, -boxCollider.size.y );
+		_raycastOrigins.bottomLeft = transform.position + new Vector3( -scaledColliderSize.x, -scaledColliderSize.y );
 		_raycastOrigins.bottomLeft.x += skinWidth;
 		_raycastOrigins.bottomLeft.y += skinWidth;
 	}
@@ -293,11 +295,11 @@ public class CharacterController2D : MonoBehaviour
 		var mask = platformMask;
 		if( isGoingUp )
 			mask &= ~oneWayPlatformMask;
-		
+
 		for( var i = 0; i < totalVerticalRays; i++ )
 		{
 			var ray = new Vector2( initialRayOrigin.x + i * _horizontalDistanceBetweenRays, initialRayOrigin.y );
-			
+
 			DrawRay( ray, rayDirection, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, mask );
 			if( _raycastHit )
@@ -328,7 +330,7 @@ public class CharacterController2D : MonoBehaviour
 			}
 		}
 	}
-	
+
 	#endregion
 
 
