@@ -3,7 +3,7 @@ CharacterController2D
 
 CharacterController2D is similar to the built-in Unity CharacterController compoent. It has a similar API (mainly a move method that takes a delta movement) and is a really good base to make a super solid controller using Unity's new 2D goodies.
 
-A simple demo scene is included along with a few Spelunky sprites (which obviously should not be used in your game!).
+A simple demo scene is included along with a few Spelunky sprites (which obviously should not be used in your game!). An overview video showing how to get started is available on the prime31studios YouTube channel [http://www.youtube.com/watch?v=KpnImAdiiaQ&feature=youtu.be](here).
 
 
 
