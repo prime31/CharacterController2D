@@ -16,6 +16,7 @@ public class PlayerTester : MonoBehaviour
 	public float normalizedHorizontalSpeed = 0;
 
 	CharacterController2D _controller;
+	Animator _animator;
 	public RaycastHit2D lastControllerColliderHit;
 
 	[HideInInspector]
@@ -24,6 +25,7 @@ public class PlayerTester : MonoBehaviour
 
 	void Awake()
 	{
+		_animator = GetComponent<Animator>();
 		_controller = GetComponent<CharacterController2D>();
 		_controller.onControllerCollidedEvent += onControllerCollider;
 	}
@@ -53,16 +55,25 @@ public class PlayerTester : MonoBehaviour
 			normalizedHorizontalSpeed = 1;
 			if( transform.localScale.x < 0f )
 				transform.localScale = new Vector3( -transform.localScale.x, transform.localScale.y, transform.localScale.z );
+
+			if( _controller.isGrounded )
+				_animator.Play( Animator.StringToHash( "Run" ) );
 		}
 		else if( Input.GetKey( KeyCode.LeftArrow ) )
 		{
 			normalizedHorizontalSpeed = -1;
 			if( transform.localScale.x > 0f )
 				transform.localScale = new Vector3( -transform.localScale.x, transform.localScale.y, transform.localScale.z );
+
+			if( _controller.isGrounded )
+				_animator.Play( Animator.StringToHash( "Run" ) );
 		}
 		else
 		{
 			normalizedHorizontalSpeed = 0;
+
+			if( _controller.isGrounded )
+				_animator.Play( Animator.StringToHash( "Idle" ) );
 		}
 
 
@@ -70,6 +81,8 @@ public class PlayerTester : MonoBehaviour
 		{
 			var targetJumpHeight = 2f;
 			velocity.y = Mathf.Sqrt( 2f * targetJumpHeight * -gravity );
+
+			_animator.Play( Animator.StringToHash( "Jump" ) );
 		}
 
 
