@@ -21,10 +21,11 @@ public class AnimationTester : MonoBehaviour
 
 	void Update()
 	{
+
 		if( _controller.isGrounded && ( Input.GetKey( KeyCode.LeftArrow ) || Input.GetKey( KeyCode.RightArrow ) ) )
-			_animator.goToStateIfNotAlreadyThere( Animator.StringToHash( "Base Layer.Run" ) );
+			_animator.Play( Animator.StringToHash( "Base Layer.Run" ) );
 		else if( _controller.isGrounded )
-			_animator.goToStateIfNotAlreadyThere( Animator.StringToHash( "Base Layer.Idle" ) );
+			_animator.Play( Animator.StringToHash( "Base Layer.Idle" ) );
 
 
 		if( Input.GetKeyDown( KeyCode.UpArrow ) )
