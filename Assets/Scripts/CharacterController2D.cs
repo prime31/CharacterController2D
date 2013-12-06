@@ -162,20 +162,21 @@ public class CharacterController2D : MonoBehaviour
 	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
 	{
 		var scaledColliderSize = new Vector2( boxCollider.size.x * Mathf.Abs( transform.localScale.x ), boxCollider.size.y * Mathf.Abs( transform.localScale.y ) ) / 2;
+		var scaledCenter = new Vector2 (boxCollider.center.x * transform.localScale.x ,boxCollider.center.y * transform.localScale.y );
 
-		_raycastOrigins.topRight = transform.position + new Vector3( scaledColliderSize.x, scaledColliderSize.y );
+		_raycastOrigins.topRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
 		_raycastOrigins.topRight.x -= skinWidth;
 		_raycastOrigins.topRight.y -= skinWidth;
 
-		_raycastOrigins.topLeft = transform.position + new Vector3( -scaledColliderSize.x, scaledColliderSize.y );
+		_raycastOrigins.topLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
 		_raycastOrigins.topLeft.x += skinWidth;
 		_raycastOrigins.topLeft.y -= skinWidth;
 
-		_raycastOrigins.bottomRight = transform.position + new Vector3( scaledColliderSize.x, -scaledColliderSize.y );
+		_raycastOrigins.bottomRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
 		_raycastOrigins.bottomRight.x -= skinWidth;
 		_raycastOrigins.bottomRight.y += skinWidth;
 
-		_raycastOrigins.bottomLeft = transform.position + new Vector3( -scaledColliderSize.x, -scaledColliderSize.y );
+		_raycastOrigins.bottomLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
 		_raycastOrigins.bottomLeft.x += skinWidth;
 		_raycastOrigins.bottomLeft.y += skinWidth;
 	}
