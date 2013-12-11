@@ -9,18 +9,17 @@ public class PlayerTester : MonoBehaviour
 	public float runSpeed = 8f;
 	public float groundDamping = 20f; // how fast do we change direction? higher means faster
 	public float inAirDamping = 5f;
+	public float jumpHeight = 3f;
 
 	[HideInInspector]
-	public float rawMovementDirection = 1;
-	//[HideInInspector]
-	public float normalizedHorizontalSpeed = 0;
-
-	CharacterController2D _controller;
-	Animator _animator;
-	public RaycastHit2D lastControllerColliderHit;
-
+	private float _rawMovementDirection = 1;
 	[HideInInspector]
-	public Vector3 velocity;
+	private float normalizedHorizontalSpeed = 0;
+
+	private CharacterController2D _controller;
+	private Animator _animator;
+	private RaycastHit2D _lastControllerColliderHit;
+	private Vector3 _velocity;
 
 
 	void Awake()
@@ -30,25 +29,26 @@ public class PlayerTester : MonoBehaviour
 		_controller.onControllerCollidedEvent += onControllerCollider;
 	}
 
-	
+
 	void onControllerCollider( RaycastHit2D hit )
 	{
 		// bail out on plain old ground hits
 		if( hit.normal.y == 1f )
 			return;
 
-		// logs any collider hits
+		// logs any collider hits if uncommented
 		//Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
 	}
 
 
+	// the Update loop contains a very simple example of moving the character around and controlling the animation
 	void Update()
 	{
-		// grab our current velocity to use as a base for all calculations
-		velocity = _controller.velocity;
+		// grab our current _velocity to use as a base for all calculations
+		_velocity = _controller.velocity;
 
 		if( _controller.isGrounded )
-			velocity.y = 0;
+			_velocity.y = 0;
 
 		if( Input.GetKey( KeyCode.RightArrow ) )
 		{
@@ -77,10 +77,10 @@ public class PlayerTester : MonoBehaviour
 		}
 
 
-		if( Input.GetKeyDown( KeyCode.UpArrow ) )
+		// we can only jump whilst grounded
+		if( _controller.isGrounded && Input.GetKeyDown( KeyCode.UpArrow ) )
 		{
-			var targetJumpHeight = 2f;
-			velocity.y = Mathf.Sqrt( 2f * targetJumpHeight * -gravity );
+			_velocity.y = Mathf.Sqrt( 2f * jumpHeight * -gravity );
 
 			_animator.Play( Animator.StringToHash( "Jump" ) );
 		}
@@ -88,12 +88,12 @@ public class PlayerTester : MonoBehaviour
 
 		// apply horizontal speed smoothing it
 		var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
-		velocity.x = Mathf.Lerp( velocity.x, normalizedHorizontalSpeed * rawMovementDirection * runSpeed, Time.deltaTime * smoothedMovementFactor );
-		
-		// apply gravity before moving
-		velocity.y += gravity * Time.deltaTime;
+		_velocity.x = Mathf.Lerp( _velocity.x, normalizedHorizontalSpeed * _rawMovementDirection * runSpeed, Time.deltaTime * smoothedMovementFactor );
 
-		_controller.move( velocity * Time.deltaTime );
+		// apply gravity before moving
+		_velocity.y += gravity * Time.deltaTime;
+
+		_controller.move( _velocity * Time.deltaTime );
 	}
 
 }
