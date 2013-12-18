@@ -12,8 +12,6 @@ public class PlayerTester : MonoBehaviour
 	public float jumpHeight = 3f;
 
 	[HideInInspector]
-	private float _rawMovementDirection = 1;
-	[HideInInspector]
 	private float normalizedHorizontalSpeed = 0;
 
 	private CharacterController2D _controller;
@@ -88,7 +86,7 @@ public class PlayerTester : MonoBehaviour
 
 		// apply horizontal speed smoothing it
 		var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
-		_velocity.x = Mathf.Lerp( _velocity.x, normalizedHorizontalSpeed * _rawMovementDirection * runSpeed, Time.deltaTime * smoothedMovementFactor );
+		_velocity.x = Mathf.Lerp( _velocity.x, normalizedHorizontalSpeed * runSpeed, Time.deltaTime * smoothedMovementFactor );
 
 		// apply gravity before moving
 		_velocity.y += gravity * Time.deltaTime;
