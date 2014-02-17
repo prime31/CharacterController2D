@@ -67,7 +67,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: duck_1
       rect:
         serializedVersion: 2
@@ -445,7 +445,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: spelunky_animations_45
       rect:
         serializedVersion: 2
@@ -454,7 +454,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: spelunky_animations_46
       rect:
         serializedVersion: 2
@@ -463,7 +463,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: spelunky_animations_47
       rect:
         serializedVersion: 2
@@ -472,7 +472,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: spelunky_animations_48
       rect:
         serializedVersion: 2
@@ -481,7 +481,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: spelunky_animations_49
       rect:
         serializedVersion: 2
@@ -490,7 +490,7 @@ TextureImporter:
         width: 80
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
     - name: rope_climb_01
       rect:
         serializedVersion: 2
@@ -685,6 +685,15 @@ TextureImporter:
         serializedVersion: 2
         x: 240
         y: 160
+        width: 80
+        height: 80
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: trigger-green
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
         width: 80
         height: 80
       alignment: 0

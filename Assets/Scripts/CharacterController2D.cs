@@ -49,9 +49,13 @@ public class CharacterController2D : MonoBehaviour
 	#endregion
 
 
-	#region properties and fields
+	#region events, properties and fields
 
 	public event Action<RaycastHit2D> onControllerCollidedEvent;
+	public event Action<Collider2D> onTriggerEnterEvent;
+	public event Action<Collider2D> onTriggerStayEvent;
+	public event Action<Collider2D> onTriggerExitEvent;
+
 
 	/// <summary>
 	/// toggles if the RigidBody2D velocity should be used for movement or if Transform.Translate will be used
@@ -87,6 +91,12 @@ public class CharacterController2D : MonoBehaviour
 	public int totalHorizontalRays = 8;
 	[Range( 2, 20 )]
 	public int totalVerticalRays = 4;
+
+	/// <summary>
+	/// if true, a new GameObject named CC2DTriggerHelper will be created in Awake and latched on via a DistanceJoint2D
+	/// to the player so that trigger messages can be received
+	/// </summary>
+	public bool createTriggerHelperGameObject = false;
 
 
 	[HideInInspector]
@@ -139,6 +149,30 @@ public class CharacterController2D : MonoBehaviour
 		// vertical
 		var colliderUseableWidth = boxCollider.size.x * Mathf.Abs( transform.localScale.x ) - ( 2f * skinWidth );
 		_horizontalDistanceBetweenRays = colliderUseableWidth / ( totalVerticalRays - 1 );
+
+		if( createTriggerHelperGameObject )
+			createTriggerHelper();
+	}
+
+
+	public void OnTriggerEnter2D( Collider2D col )
+	{
+		if( onTriggerEnterEvent != null )
+			onTriggerEnterEvent( col );
+	}
+	
+	
+	public void OnTriggerStay2D( Collider2D col )
+	{
+		if( onTriggerStayEvent != null )
+			onTriggerStayEvent( col );
+	}
+	
+	
+	public void OnTriggerExit2D( Collider2D col )
+	{
+		if( onTriggerExitEvent != null )
+			onTriggerExitEvent( col );
 	}
 
 	#endregion
@@ -148,6 +182,37 @@ public class CharacterController2D : MonoBehaviour
 	private void DrawRay( Vector3 start, Vector3 dir, Color color )
 	{
 		Debug.DrawRay( start, dir, color );
+	}
+
+
+	/// <summary>
+	/// this is called internally if createTriggerHelperGameObject is true. It is provided as a public method
+	/// in case you want to grab a handle on the GO created to modify it in some way. Note that by default only
+	/// collisions with triggers will be allowed to pass through and fire the events.
+	/// </summary>
+	public GameObject createTriggerHelper()
+	{
+		var go = new GameObject( "PlayerTriggerHelper" );
+		go.hideFlags = HideFlags.HideInHierarchy;
+		go.layer = gameObject.layer;
+		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
+		go.transform.localScale = transform.localScale * 0.95f;
+
+		go.AddComponent<CC2DTriggerHelper>().setParentCharacterController( this );
+
+		var rb = go.AddComponent<Rigidbody2D>();
+		rb.mass = 0f;
+		rb.gravityScale = 0f;
+
+		var bc = go.AddComponent<BoxCollider2D>();
+		bc.size = boxCollider.size;
+		bc.isTrigger = true;
+
+		var joint = go.AddComponent<DistanceJoint2D>();
+		joint.connectedBody = rigidbody2D;
+		joint.distance = 0f;
+
+		return go;
 	}
 
 
@@ -333,7 +398,7 @@ public class CharacterController2D : MonoBehaviour
 	}
 
 	#endregion
-
+	
 
 	public void move( Vector3 deltaMovement )
 	{

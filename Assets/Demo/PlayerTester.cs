@@ -5,7 +5,7 @@ using System.Collections;
 public class PlayerTester : MonoBehaviour
 {
 	// movement config
-	public float gravity = -15f;
+	public float gravity = -25f;
 	public float runSpeed = 8f;
 	public float groundDamping = 20f; // how fast do we change direction? higher means faster
 	public float inAirDamping = 5f;
@@ -20,13 +20,21 @@ public class PlayerTester : MonoBehaviour
 	private Vector3 _velocity;
 
 
+
+
 	void Awake()
 	{
 		_animator = GetComponent<Animator>();
 		_controller = GetComponent<CharacterController2D>();
+
+		// listen to some events for illustration purposes
 		_controller.onControllerCollidedEvent += onControllerCollider;
+		_controller.onTriggerEnterEvent += onTriggerEnterEvent;
+		_controller.onTriggerExitEvent += onTriggerExitEvent;
 	}
 
+
+	#region Event Listeners
 
 	void onControllerCollider( RaycastHit2D hit )
 	{
@@ -34,9 +42,23 @@ public class PlayerTester : MonoBehaviour
 		if( hit.normal.y == 1f )
 			return;
 
-		// logs any collider hits if uncommented
+		// logs any collider hits if uncommented. it gets noisy so it is commented out for the demo
 		//Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
 	}
+
+
+	void onTriggerEnterEvent( Collider2D col )
+	{
+		Debug.Log( "onTriggerEnterEvent: " + col.gameObject.name );
+	}
+
+
+	void onTriggerExitEvent( Collider2D col )
+	{
+		Debug.Log( "onTriggerExitEvent: " + col.gameObject.name );
+	}
+
+	#endregion
 
 
 	// the Update loop contains a very simple example of moving the character around and controlling the animation

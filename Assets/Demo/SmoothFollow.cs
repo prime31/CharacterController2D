@@ -7,6 +7,7 @@ public class SmoothFollow : MonoBehaviour
 {
 	public Transform target;
 	public float followSpeed = 2.0f;
+	[HideInInspector]
 	public new Transform transform;
 	public Vector3 cameraOffset;
 	
