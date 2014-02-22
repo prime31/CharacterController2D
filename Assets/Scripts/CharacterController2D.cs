@@ -125,6 +125,12 @@ public class CharacterController2D : MonoBehaviour
 	/// </summary>
 	private RaycastHit2D _raycastHit;
 
+	/// <summary>
+	/// stores any raycast hits that occur this frame. we have to store them in case we get a hit moving
+	/// horizontally and vertically so that we can send the events after all collision state is set
+	/// </summary>
+	private List<RaycastHit2D> _raycastHitsThisFrame = new List<RaycastHit2D>( 2 );
+
 	// horizontal/vertical movement data
 	private float _verticalDistanceBetweenRays;
 	private float _horizontalDistanceBetweenRays;
@@ -271,9 +277,7 @@ public class CharacterController2D : MonoBehaviour
 				// the bottom ray can hit slopes but no other ray can so we have special handling for those cases
 				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), isGoingRight ) )
 				{
-					if( onControllerCollidedEvent != null )
-						onControllerCollidedEvent( _raycastHit );
-
+					_raycastHitsThisFrame.Add( _raycastHit );
 					break;
 				}
 
@@ -293,8 +297,7 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.left = true;
 				}
 
-				if( onControllerCollidedEvent != null )
-					onControllerCollidedEvent( _raycastHit );
+				_raycastHitsThisFrame.Add( _raycastHit );
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
@@ -308,7 +311,7 @@ public class CharacterController2D : MonoBehaviour
 	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle, bool isGoingRight )
 	{
 		// disregard 90 degree angles (walls)
-		if( angle == 90f )
+		if( Mathf.RoundToInt( angle ) == 90 )
 			return false;
 
 		// if we can walk on slopes and our angle is small enough we need to move up
@@ -386,8 +389,7 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.below = true;
 				}
 
-				if( onControllerCollidedEvent != null )
-					onControllerCollidedEvent( _raycastHit );
+				_raycastHitsThisFrame.Add( _raycastHit );
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
@@ -407,6 +409,7 @@ public class CharacterController2D : MonoBehaviour
 
 		// clear our state
 		collisionState.reset();
+		_raycastHitsThisFrame.Clear();
 
 		var desiredPosition = transform.position + deltaMovement;
 		primeRaycastOrigins( desiredPosition, deltaMovement );
@@ -434,6 +437,13 @@ public class CharacterController2D : MonoBehaviour
 		// set our becameGrounded state based on the previous and current collision state
 		if( !wasGroundedBeforeMoving && collisionState.below )
 			collisionState.becameGroundedThisFrame = true;
+
+		// send off the collision events if we have a listener
+		if( onControllerCollidedEvent != null )
+		{
+			for( var i = 0; i < _raycastHitsThisFrame.Count; i++ )
+				onControllerCollidedEvent( _raycastHitsThisFrame[i] );
+		}
 	}
 
 }
