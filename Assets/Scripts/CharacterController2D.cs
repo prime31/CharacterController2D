@@ -97,6 +97,9 @@ public class CharacterController2D : MonoBehaviour
 	/// to the player so that trigger messages can be received
 	/// </summary>
 	public bool createTriggerHelperGameObject = false;
+	
+	[Range( 0.8f, 0.999f )]
+	public float triggerHelperBoxColliderScale = 0.95f;
 
 
 	[HideInInspector]
@@ -202,7 +205,7 @@ public class CharacterController2D : MonoBehaviour
 		go.hideFlags = HideFlags.HideInHierarchy;
 		go.layer = gameObject.layer;
 		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
-		go.transform.localScale = transform.localScale * 0.95f;
+		go.transform.localScale = transform.localScale * triggerHelperBoxColliderScale;
 
 		go.AddComponent<CC2DTriggerHelper>().setParentCharacterController( this );
 
@@ -233,7 +236,7 @@ public class CharacterController2D : MonoBehaviour
 	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
 	{
 		var scaledColliderSize = new Vector2( boxCollider.size.x * Mathf.Abs( transform.localScale.x ), boxCollider.size.y * Mathf.Abs( transform.localScale.y ) ) / 2;
-		var scaledCenter = new Vector2 (boxCollider.center.x * transform.localScale.x ,boxCollider.center.y * transform.localScale.y );
+		var scaledCenter = new Vector2( boxCollider.center.x * transform.localScale.x, boxCollider.center.y * transform.localScale.y );
 
 		_raycastOrigins.topRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
 		_raycastOrigins.topRight.x -= skinWidth;
@@ -425,7 +428,11 @@ public class CharacterController2D : MonoBehaviour
 		// move then update our state
 		if( usePhysicsForMovement )
 		{
+#if UNITY_4_5 || UNITY_4_6
+			rigidbody2D.MovePosition( transform.position + deltaMovement );
+#else
 			rigidbody2D.velocity = deltaMovement / Time.fixedDeltaTime;
+#endif
 			velocity = rigidbody2D.velocity;
 		}
 		else
