@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class PlayerTester : MonoBehaviour
+public class NonPhysicsPlayerTester : MonoBehaviour
 {
 	// movement config
 	public float gravity = -25f;
@@ -101,7 +101,6 @@ public class PlayerTester : MonoBehaviour
 		if( _controller.isGrounded && Input.GetKeyDown( KeyCode.UpArrow ) )
 		{
 			_velocity.y = Mathf.Sqrt( 2f * jumpHeight * -gravity );
-
 			_animator.Play( Animator.StringToHash( "Jump" ) );
 		}
 

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-[RequireComponent( typeof( BoxCollider2D ) )]
+[RequireComponent( typeof( BoxCollider2D ), typeof( Rigidbody2D ) )]
 public class CharacterController2D : MonoBehaviour
 {
 	#region internal types
@@ -58,7 +58,7 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
-	/// toggles if the RigidBody2D velocity should be used for movement or if Transform.Translate will be used
+	/// toggles if the RigidBody2D methods should be used for movement or if Transform.Translate will be used
 	/// </summary>
 	public bool usePhysicsForMovement = false;
 
@@ -106,6 +106,8 @@ public class CharacterController2D : MonoBehaviour
 	public new Transform transform;
 	[HideInInspector]
 	public BoxCollider2D boxCollider;
+	[HideInInspector]
+	public Rigidbody2D rigidBody2D;
 
 	[HideInInspector]
 	[NonSerialized]
@@ -149,6 +151,7 @@ public class CharacterController2D : MonoBehaviour
 		// cache some components
 		transform = GetComponent<Transform>();
 		boxCollider = GetComponent<BoxCollider2D>();
+		rigidBody2D = GetComponent<Rigidbody2D>();
 
 		// figure out the distance between our rays in both directions
 		// horizontal
