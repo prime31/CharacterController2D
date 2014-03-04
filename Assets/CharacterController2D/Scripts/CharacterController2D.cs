@@ -9,14 +9,6 @@ public class CharacterController2D : MonoBehaviour
 {
 	#region internal types
 
-	private enum MoveDirection : int
-	{
-		Right = 1,
-		Left = -1,
-		Up = 1,
-		Down = -1
-	}
-
 	private struct CharacterRaycastOrigins
 	{
 		public Vector3 topRight;
@@ -32,6 +24,12 @@ public class CharacterController2D : MonoBehaviour
 		public bool above;
 		public bool below;
 		public bool becameGroundedThisFrame;
+
+
+		public bool hasCollision()
+		{
+			return below || right || left || above;
+		}
 
 
 		public void reset()
@@ -66,7 +64,7 @@ public class CharacterController2D : MonoBehaviour
 	/// defines how far in from the edges of the collider rays are cast from. If cast with a 0 extent it will often result in ray hits that are
 	/// not desired (for example a foot collider casting horizontally from directly on the surface can result in a hit)
 	/// </summary>
-	[Range( 0, 0.3f )]
+	[Range( 0.001f, 0.3f )]
 	public float skinWidth = 0.02f;
 
 	/// <summary>
@@ -116,6 +114,8 @@ public class CharacterController2D : MonoBehaviour
 	[NonSerialized]
 	public Vector3 velocity;
 	public bool isGrounded { get { return collisionState.below; } }
+
+	private const float kSkinWidthFloatFudgeFactor = 0.001f;
 
 	#endregion
 
@@ -276,7 +276,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			var ray = new Vector2( initialRayOrigin.x, initialRayOrigin.y + i * _verticalDistanceBetweenRays );
 
-			DrawRay( ray, rayDirection, Color.red );
+			DrawRay( ray, rayDirection.normalized * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, platformMask & ~oneWayPlatformMask );
 			if( _raycastHit )
 			{
@@ -307,7 +307,7 @@ public class CharacterController2D : MonoBehaviour
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
-				if( rayDistance < skinWidth + 0.001f )
+				if( rayDistance < skinWidth + kSkinWidthFloatFudgeFactor )
 					break;
 			}
 		}
@@ -366,6 +366,8 @@ public class CharacterController2D : MonoBehaviour
 		var rayDirection = isGoingUp ? Vector2.up : -Vector2.up;
 		var initialRayOrigin = isGoingUp ? _raycastOrigins.topLeft : _raycastOrigins.bottomLeft;
 
+		initialRayOrigin.x += deltaMovement.x;
+
 		// if we are moving up, we should ignore the layers in oneWayPlatformMask
 		var mask = platformMask;
 		if( isGoingUp )
@@ -375,7 +377,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			var ray = new Vector2( initialRayOrigin.x + i * _horizontalDistanceBetweenRays, initialRayOrigin.y );
 
-			DrawRay( ray, rayDirection, Color.red );
+			DrawRay( ray, rayDirection.normalized * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, mask );
 			if( _raycastHit )
 			{
@@ -399,9 +401,45 @@ public class CharacterController2D : MonoBehaviour
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
-				if( rayDistance < skinWidth + 0.001f )
+				if( rayDistance < skinWidth + kSkinWidthFloatFudgeFactor )
 					return;
 			}
+		}
+	}
+
+
+	/// <summary>
+	/// this method feels like a bit of a hack. it gets called when there are no collisions detected by either the horizontal
+	/// or vertical checks (for example: http://cl.ly/UD8V/Screen%20Shot%202014-03-03%20at%203.55.53%20PM.png)
+	/// </summary>
+	private void performDiagonalChecks( ref Vector3 deltaMovement )
+	{
+		var isGoingUp = deltaMovement.y > 0;
+		var isGoingRight = deltaMovement.x > 0;
+		Vector3 ray;
+
+		// figure out which ray origin to use based on movement direction
+		if( isGoingRight && isGoingUp )
+			ray = _raycastOrigins.topRight;
+		else if( isGoingRight && !isGoingUp )
+			ray = _raycastOrigins.bottomRight;
+		else if( !isGoingRight && isGoingUp )
+			ray = _raycastOrigins.topLeft;
+		else
+			ray = _raycastOrigins.bottomLeft;
+
+
+		DrawRay( ray, deltaMovement, Color.white );
+
+		_raycastHit = Physics2D.Raycast( ray, deltaMovement, deltaMovement.magnitude, platformMask & ~oneWayPlatformMask );
+		if( _raycastHit )
+		{
+			Debug.Break();
+			var xSkinAdjustment = isGoingRight ? -skinWidth : skinWidth;
+			var ySkinAdjustment = isGoingUp ? -skinWidth : skinWidth;
+
+			deltaMovement.x = _raycastHit.point.x - ray.x + xSkinAdjustment;
+			deltaMovement.y = _raycastHit.point.y - ray.y + ySkinAdjustment;
 		}
 	}
 
@@ -427,6 +465,11 @@ public class CharacterController2D : MonoBehaviour
 		// next, check movement in the vertical dir
 		if( deltaMovement.y != 0 )
 			moveVertically( ref deltaMovement );
+
+
+		if( !collisionState.hasCollision() && deltaMovement.x != 0 && deltaMovement.y != 0 )
+			performDiagonalChecks( ref deltaMovement );
+
 
 		// move then update our state
 		if( usePhysicsForMovement )
