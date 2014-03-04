@@ -407,42 +407,6 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-
-	/// <summary>
-	/// this method feels like a bit of a hack. it gets called when there are no collisions detected by either the horizontal
-	/// or vertical checks (for example: http://cl.ly/UD8V/Screen%20Shot%202014-03-03%20at%203.55.53%20PM.png)
-	/// </summary>
-	private void performDiagonalChecks( ref Vector3 deltaMovement )
-	{
-		var isGoingUp = deltaMovement.y > 0;
-		var isGoingRight = deltaMovement.x > 0;
-		Vector3 ray;
-
-		// figure out which ray origin to use based on movement direction
-		if( isGoingRight && isGoingUp )
-			ray = _raycastOrigins.topRight;
-		else if( isGoingRight && !isGoingUp )
-			ray = _raycastOrigins.bottomRight;
-		else if( !isGoingRight && isGoingUp )
-			ray = _raycastOrigins.topLeft;
-		else
-			ray = _raycastOrigins.bottomLeft;
-
-
-		DrawRay( ray, deltaMovement, Color.white );
-
-		_raycastHit = Physics2D.Raycast( ray, deltaMovement, deltaMovement.magnitude, platformMask & ~oneWayPlatformMask );
-		if( _raycastHit )
-		{
-			Debug.Break();
-			var xSkinAdjustment = isGoingRight ? -skinWidth : skinWidth;
-			var ySkinAdjustment = isGoingUp ? -skinWidth : skinWidth;
-
-			deltaMovement.x = _raycastHit.point.x - ray.x + xSkinAdjustment;
-			deltaMovement.y = _raycastHit.point.y - ray.y + ySkinAdjustment;
-		}
-	}
-
 	#endregion
 	
 
@@ -465,10 +429,6 @@ public class CharacterController2D : MonoBehaviour
 		// next, check movement in the vertical dir
 		if( deltaMovement.y != 0 )
 			moveVertically( ref deltaMovement );
-
-
-		if( !collisionState.hasCollision() && deltaMovement.x != 0 && deltaMovement.y != 0 )
-			performDiagonalChecks( ref deltaMovement );
 
 
 		// move then update our state
