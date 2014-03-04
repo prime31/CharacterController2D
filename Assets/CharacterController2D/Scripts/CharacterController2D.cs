@@ -366,6 +366,7 @@ public class CharacterController2D : MonoBehaviour
 		var rayDirection = isGoingUp ? Vector2.up : -Vector2.up;
 		var initialRayOrigin = isGoingUp ? _raycastOrigins.topLeft : _raycastOrigins.bottomLeft;
 
+		// apply our horizontal deltaMovement here so that we do our raycast from the actual position we would be in if we had moved
 		initialRayOrigin.x += deltaMovement.x;
 
 		// if we are moving up, we should ignore the layers in oneWayPlatformMask
