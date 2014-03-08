@@ -56,16 +56,29 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
-	/// toggles if the RigidBody2D methods should be used for movement or if Transform.Translate will be used
+	/// toggles if the RigidBody2D methods should be used for movement or if Transform.Translate will be used. All the usual Unity rules for physics based movement apply when true
+	/// such as getting your input in Update and only calling move in FixedUpdate amonst others.
 	/// </summary>
 	public bool usePhysicsForMovement = false;
+	
+	[SerializeField]
+	[Range( 0.001f, 0.3f )]
+	private float _skinWidth = 0.02f;
 
 	/// <summary>
 	/// defines how far in from the edges of the collider rays are cast from. If cast with a 0 extent it will often result in ray hits that are
 	/// not desired (for example a foot collider casting horizontally from directly on the surface can result in a hit)
 	/// </summary>
-	[Range( 0.001f, 0.3f )]
-	public float skinWidth = 0.02f;
+	public float skinWidth
+	{
+		get { return _skinWidth; }
+		set
+		{
+			_skinWidth = value;
+			recalculateDistanceBetweenRays();
+		}
+	}
+
 
 	/// <summary>
 	/// mask with all layers that the player should interact with
@@ -73,12 +86,31 @@ public class CharacterController2D : MonoBehaviour
 	public LayerMask platformMask = 0;
 
 	/// <summary>
-	/// mask with all layers that should act as one-way platforms. Note that one-way platforms should always be EdgeCollider2Ds
+	/// mask with all layers that should act as one-way platforms. Note that one-way platforms should always be EdgeCollider2Ds. This is private because it does not support being
+	/// updated anytime outside of the inspector for now.
 	/// </summary>
-	public LayerMask oneWayPlatformMask = 0;
+	[SerializeField]
+	private LayerMask oneWayPlatformMask = 0;
 
+
+	/// <summary>
+	/// the max slope angle that the CC2D can climb
+	/// </summary>
+	/// <value>The slope limit.</value>
+	public float slopeLimit
+	{
+		get { return _slopeLimit; }
+		set
+		{
+			_slopeLimit = value;
+			_slopeLimitTangent = Mathf.Tan( 2f * _slopeLimit * Mathf.Deg2Rad );
+		}
+	}
+
+	[SerializeField]
 	[Range( 0, 90f )]
-	public float slopeLimit = 30f;
+	private float _slopeLimit = 30f;
+
 
 	/// <summary>
 	/// curve for multiplying speed based on slope (negative = down slope and positive = up slope)
@@ -89,6 +121,14 @@ public class CharacterController2D : MonoBehaviour
 	public int totalHorizontalRays = 8;
 	[Range( 2, 20 )]
 	public int totalVerticalRays = 4;
+
+
+	/// <summary>
+	/// this is used to calculate the downward ray that is cast to check for slopes. It is cached because there is no reason to calculate a tangent every frame.
+	/// It relies on the slopeLimit which is why the slopeLimit is a property. The setter recalculates the slopeLimitTangent.
+	/// </summary>
+	private float _slopeLimitTangent;
+
 
 	/// <summary>
 	/// if true, a new GameObject named CC2DTriggerHelper will be created in Awake and latched on via a DistanceJoint2D
@@ -153,17 +193,12 @@ public class CharacterController2D : MonoBehaviour
 		boxCollider = GetComponent<BoxCollider2D>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 
-		// figure out the distance between our rays in both directions
-		// horizontal
-		var colliderUseableHeight = boxCollider.size.y * Mathf.Abs( transform.localScale.y ) - ( 2f * skinWidth );
-		_verticalDistanceBetweenRays = colliderUseableHeight / ( totalHorizontalRays - 1 );
-
-		// vertical
-		var colliderUseableWidth = boxCollider.size.x * Mathf.Abs( transform.localScale.x ) - ( 2f * skinWidth );
-		_horizontalDistanceBetweenRays = colliderUseableWidth / ( totalVerticalRays - 1 );
-
 		if( createTriggerHelperGameObject )
 			createTriggerHelper();
+
+		// here, we trigger our properties that have setters with bodies
+		slopeLimit = _slopeLimit;
+		skinWidth = _skinWidth;
 	}
 
 
@@ -188,12 +223,32 @@ public class CharacterController2D : MonoBehaviour
 	}
 
 	#endregion
-
+	
 
 	[System.Diagnostics.Conditional( "DEBUG_CC2D_RAYS" )]
 	private void DrawRay( Vector3 start, Vector3 dir, Color color )
 	{
 		Debug.DrawRay( start, dir, color );
+	}
+
+
+
+	#region Public
+
+	/// <summary>
+	/// this should be called anytime you have to modify the BoxCollider2D at runtime. It will recalculate the distance between the rays used for collision detection.
+	/// It is also used in the skinWidth setter in case it is changed at runtime.
+	/// </summary>
+	public void recalculateDistanceBetweenRays()
+	{
+		// figure out the distance between our rays in both directions
+		// horizontal
+		var colliderUseableHeight = boxCollider.size.y * Mathf.Abs( transform.localScale.y ) - ( 2f * _skinWidth );
+		_verticalDistanceBetweenRays = colliderUseableHeight / ( totalHorizontalRays - 1 );
+		
+		// vertical
+		var colliderUseableWidth = boxCollider.size.x * Mathf.Abs( transform.localScale.x ) - ( 2f * _skinWidth );
+		_horizontalDistanceBetweenRays = colliderUseableWidth / ( totalVerticalRays - 1 );
 	}
 
 
@@ -227,6 +282,8 @@ public class CharacterController2D : MonoBehaviour
 		return go;
 	}
 
+	#endregion
+
 
 	#region Movement
 
@@ -242,20 +299,20 @@ public class CharacterController2D : MonoBehaviour
 		var scaledCenter = new Vector2( boxCollider.center.x * transform.localScale.x, boxCollider.center.y * transform.localScale.y );
 
 		_raycastOrigins.topRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
-		_raycastOrigins.topRight.x -= skinWidth;
-		_raycastOrigins.topRight.y -= skinWidth;
+		_raycastOrigins.topRight.x -= _skinWidth;
+		_raycastOrigins.topRight.y -= _skinWidth;
 
 		_raycastOrigins.topLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
-		_raycastOrigins.topLeft.x += skinWidth;
-		_raycastOrigins.topLeft.y -= skinWidth;
+		_raycastOrigins.topLeft.x += _skinWidth;
+		_raycastOrigins.topLeft.y -= _skinWidth;
 
 		_raycastOrigins.bottomRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
-		_raycastOrigins.bottomRight.x -= skinWidth;
-		_raycastOrigins.bottomRight.y += skinWidth;
+		_raycastOrigins.bottomRight.x -= _skinWidth;
+		_raycastOrigins.bottomRight.y += _skinWidth;
 
 		_raycastOrigins.bottomLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
-		_raycastOrigins.bottomLeft.x += skinWidth;
-		_raycastOrigins.bottomLeft.y += skinWidth;
+		_raycastOrigins.bottomLeft.x += _skinWidth;
+		_raycastOrigins.bottomLeft.y += _skinWidth;
 	}
 
 
@@ -268,7 +325,7 @@ public class CharacterController2D : MonoBehaviour
 	private void moveHorizontally( ref Vector3 deltaMovement )
 	{
 		var isGoingRight = deltaMovement.x > 0;
-		var rayDistance = Mathf.Abs( deltaMovement.x ) + skinWidth;
+		var rayDistance = Mathf.Abs( deltaMovement.x ) + _skinWidth;
 		var rayDirection = isGoingRight ? Vector2.right : -Vector2.right;
 		var initialRayOrigin = isGoingRight ? _raycastOrigins.bottomRight : _raycastOrigins.bottomLeft;
 
@@ -294,12 +351,12 @@ public class CharacterController2D : MonoBehaviour
 				// remember to remove the skinWidth from our deltaMovement
 				if( isGoingRight )
 				{
-					deltaMovement.x -= skinWidth;
+					deltaMovement.x -= _skinWidth;
 					collisionState.right = true;
 				}
 				else
 				{
-					deltaMovement.x += skinWidth;
+					deltaMovement.x += _skinWidth;
 					collisionState.left = true;
 				}
 
@@ -307,7 +364,7 @@ public class CharacterController2D : MonoBehaviour
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
-				if( rayDistance < skinWidth + kSkinWidthFloatFudgeFactor )
+				if( rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor )
 					break;
 			}
 		}
@@ -321,7 +378,7 @@ public class CharacterController2D : MonoBehaviour
 			return false;
 
 		// if we can walk on slopes and our angle is small enough we need to move up
-		if( angle < slopeLimit )
+		if( angle < _slopeLimit )
 		{
 			// we only need to adjust the y movement if we are not jumping
 			// TODO: this uses a magic number which isn't ideal!
@@ -333,12 +390,12 @@ public class CharacterController2D : MonoBehaviour
 
 				if( isGoingRight )
 				{
-					deltaMovement.x -= skinWidth;
+					deltaMovement.x -= _skinWidth;
 					collisionState.right = true;
 				}
 				else
 				{
-					deltaMovement.x += skinWidth;
+					deltaMovement.x += _skinWidth;
 					collisionState.left = true;
 				}
 
@@ -361,7 +418,7 @@ public class CharacterController2D : MonoBehaviour
 	private void moveVertically( ref Vector3 deltaMovement )
 	{
 		var isGoingUp = deltaMovement.y > 0;
-		var rayDistance = Mathf.Abs( deltaMovement.y ) + skinWidth;
+		var rayDistance = Mathf.Abs( deltaMovement.y ) + _skinWidth;
 		var rayDirection = isGoingUp ? Vector2.up : -Vector2.up;
 		var initialRayOrigin = isGoingUp ? _raycastOrigins.topLeft : _raycastOrigins.bottomLeft;
 
@@ -388,12 +445,12 @@ public class CharacterController2D : MonoBehaviour
 				// remember to remove the skinWidth from our deltaMovement
 				if( isGoingUp )
 				{
-					deltaMovement.y -= skinWidth;
+					deltaMovement.y -= _skinWidth;
 					collisionState.above = true;
 				}
 				else
 				{
-					deltaMovement.y += skinWidth;
+					deltaMovement.y += _skinWidth;
 					collisionState.below = true;
 				}
 
@@ -401,7 +458,7 @@ public class CharacterController2D : MonoBehaviour
 
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
-				if( rayDistance < skinWidth + kSkinWidthFloatFudgeFactor )
+				if( rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor )
 					return;
 			}
 		}
@@ -420,7 +477,7 @@ public class CharacterController2D : MonoBehaviour
 		var rayDirection = -Vector2.up;
 
 		// the ray distance is based on our slopeLimit. we will check for slopes up to 2x our slopeLimit
-		var slopeCheckRayDistance = Mathf.Tan( 2f * slopeLimit * Mathf.Deg2Rad ) * ( _raycastOrigins.bottomRight.x - centerOfCollider );
+		var slopeCheckRayDistance = _slopeLimitTangent * ( _raycastOrigins.bottomRight.x - centerOfCollider );
 		
 		var slopeRay = new Vector2( centerOfCollider, _raycastOrigins.bottomLeft.y );
 		DrawRay( slopeRay, rayDirection * slopeCheckRayDistance, Color.yellow );
