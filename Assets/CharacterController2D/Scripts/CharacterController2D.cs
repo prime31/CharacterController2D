@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿#define DEBUG_CC2D_RAYS
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -81,9 +81,9 @@ public class CharacterController2D : MonoBehaviour
 	public float slopeLimit = 30f;
 
 	/// <summary>
-	/// curve for multiplying speed based on slope (negative = downwards)
+	/// curve for multiplying speed based on slope (negative = down slope and positive = up slope)
 	/// </summary>
-	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
+	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( -90, 0.5f ), new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
 
 	[Range( 2, 20 )]
 	public int totalHorizontalRays = 8;
@@ -190,7 +190,7 @@ public class CharacterController2D : MonoBehaviour
 	#endregion
 
 
-	[System.Diagnostics.Conditional( "DEBUG" )]
+	[System.Diagnostics.Conditional( "DEBUG_CC2D_RAYS" )]
 	private void DrawRay( Vector3 start, Vector3 dir, Color color )
 	{
 		Debug.DrawRay( start, dir, color );
@@ -276,7 +276,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			var ray = new Vector2( initialRayOrigin.x, initialRayOrigin.y + i * _verticalDistanceBetweenRays );
 
-			DrawRay( ray, rayDirection.normalized * rayDistance, Color.red );
+			DrawRay( ray, rayDirection * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, platformMask & ~oneWayPlatformMask );
 			if( _raycastHit )
 			{
@@ -327,8 +327,7 @@ public class CharacterController2D : MonoBehaviour
 			// TODO: this uses a magic number which isn't ideal!
 			if( deltaMovement.y < 0.07f )
 			{
-				// apply the slopeModifier. perhaps we should divide by deltaTime then modify the speed and multiply
-				// by deltaTime again to get the distance...
+				// apply the slopeModifier to slow our movement up the slope
 				var slopeModifier = slopeSpeedMultiplier.Evaluate( angle );
 				deltaMovement.x *= slopeModifier;
 
@@ -343,7 +342,8 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.left = true;
 				}
 
-				// smooth y movement when we climb
+				// smooth y movement when we climb. we make the y movement equivalent to the actual y location the corresponds
+				// to our new x location using our good friend Pythagoras
 				deltaMovement.y = Mathf.Abs( Mathf.Tan( angle * Mathf.Deg2Rad ) * deltaMovement.x );
 
 				collisionState.below = true;
@@ -351,7 +351,6 @@ public class CharacterController2D : MonoBehaviour
 		}
 		else // too steep. get out of here
 		{
-			//Debug.LogWarning( "too steep yo " + angle );
 			deltaMovement.x = 0;
 		}
 
@@ -378,7 +377,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			var ray = new Vector2( initialRayOrigin.x + i * _horizontalDistanceBetweenRays, initialRayOrigin.y );
 
-			DrawRay( ray, rayDirection.normalized * rayDistance, Color.red );
+			DrawRay( ray, rayDirection * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, mask );
 			if( _raycastHit )
 			{
@@ -408,6 +407,43 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
+
+	/// <summary>
+	/// checks the center point under the BoxCollider2D for a slope. If it finds one then the deltaMovement is adjusted so that
+	/// the player stays grounded and the slopeSpeedModifier is taken into account to speed up movement.
+	/// </summary>
+	/// <param name="deltaMovement">Delta movement.</param>
+	private void handleVerticalSlope( ref Vector3 deltaMovement )
+	{
+		// slope check from the center of our collider
+		var centerOfCollider = ( _raycastOrigins.bottomLeft.x + _raycastOrigins.bottomRight.x ) * 0.5f;
+		var rayDirection = -Vector2.up;
+
+		// the ray distance is based on our slopeLimit. we will check for slopes up to 2x our slopeLimit
+		var slopeCheckRayDistance = Mathf.Tan( 2f * slopeLimit * Mathf.Deg2Rad ) * ( _raycastOrigins.bottomRight.x - centerOfCollider );
+		
+		var slopeRay = new Vector2( centerOfCollider, _raycastOrigins.bottomLeft.y );
+		DrawRay( slopeRay, rayDirection * slopeCheckRayDistance, Color.yellow );
+		_raycastHit = Physics2D.Raycast( slopeRay, rayDirection, slopeCheckRayDistance, platformMask );
+		if( _raycastHit )
+		{
+			// bail out if we have no slope
+			var angle = Vector2.Angle( _raycastHit.normal, Vector2.up );
+			if( angle == 0 )
+				return;
+
+			// we are moving down the slope if our normal and movement direction are in the same x direction
+			var isMovingDownSlope = Mathf.Sign( _raycastHit.normal.x ) == Mathf.Sign( deltaMovement.x );
+			if( isMovingDownSlope )
+			{
+				// going down we want to speed up proportionally to the slope so we use 1 + 1 - modifier to get that value
+				var slopeModifier = 1f + 1f - slopeSpeedMultiplier.Evaluate( -angle );
+				deltaMovement.y = _raycastHit.point.y - slopeRay.y;
+				deltaMovement.x *= slopeModifier;
+			}
+		}
+	}
+
 	#endregion
 	
 
@@ -423,7 +459,13 @@ public class CharacterController2D : MonoBehaviour
 		var desiredPosition = transform.position + deltaMovement;
 		primeRaycastOrigins( desiredPosition, deltaMovement );
 
-		// first we check movement in the horizontal dir
+
+		// first, we check for a slope below us before moving
+		// only check slopes if we are going down and grounded
+		if( deltaMovement.y < 0 && wasGroundedBeforeMoving )
+			handleVerticalSlope( ref deltaMovement );
+
+		// now we check movement in the horizontal dir
 		if( deltaMovement.x != 0 )
 			moveHorizontally( ref deltaMovement );
 
