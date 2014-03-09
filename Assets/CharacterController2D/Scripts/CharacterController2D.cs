@@ -24,6 +24,8 @@ public class CharacterController2D : MonoBehaviour
 		public bool above;
 		public bool below;
 		public bool becameGroundedThisFrame;
+		public bool movingDownSlope;
+		public float slopeAngle;
 
 
 		public bool hasCollision()
@@ -34,13 +36,15 @@ public class CharacterController2D : MonoBehaviour
 
 		public void reset()
 		{
-			right = left = above = below = becameGroundedThisFrame = false;
+			right = left = above = below = becameGroundedThisFrame = movingDownSlope = false;
+			slopeAngle = 0f;
 		}
 
 
 		public override string ToString()
 		{
-			return string.Format( "[CharacterCollisionState2D] r: {0}, l: {1}, a: {2}, b: {3}", right, left, above, below );
+			return string.Format( "[CharacterCollisionState2D] r: {0}, l: {1}, a: {2}, b: {3}, movingDownSlope: {4}, angle: {5}",
+			                     right, left, above, below, movingDownSlope, slopeAngle );
 		}
 	}
 
@@ -103,6 +107,8 @@ public class CharacterController2D : MonoBehaviour
 		set
 		{
 			_slopeLimit = value;
+			// TODO: we use 2x the slopeLimit to figure out our eventual ray length. Is there a better way? Does this cover
+			// all use cases?
 			_slopeLimitTangent = Mathf.Tan( 2f * _slopeLimit * Mathf.Deg2Rad );
 		}
 	}
@@ -115,7 +121,7 @@ public class CharacterController2D : MonoBehaviour
 	/// <summary>
 	/// curve for multiplying speed based on slope (negative = down slope and positive = up slope)
 	/// </summary>
-	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( -90, 0.5f ), new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
+	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( -90, 1.5f ), new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
 
 	[Range( 2, 20 )]
 	public int totalHorizontalRays = 8;
@@ -193,6 +199,10 @@ public class CharacterController2D : MonoBehaviour
 		boxCollider = GetComponent<BoxCollider2D>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 
+		// we dont have a bounds property until Unity 4.5+ so we really don't need the BoxCollider2D to be active since we just use
+		// it for it's size and center properties so might as well remove it from play
+		boxCollider.enabled = false;
+
 		if( createTriggerHelperGameObject )
 			createTriggerHelper();
 
@@ -230,10 +240,65 @@ public class CharacterController2D : MonoBehaviour
 	{
 		Debug.DrawRay( start, dir, color );
 	}
-
-
+	
 
 	#region Public
+
+	public void move( Vector3 deltaMovement )
+	{
+		// save off our current grounded state
+		var wasGroundedBeforeMoving = collisionState.below;
+		
+		// clear our state
+		collisionState.reset();
+		_raycastHitsThisFrame.Clear();
+		
+		var desiredPosition = transform.position + deltaMovement;
+		primeRaycastOrigins( desiredPosition, deltaMovement );
+		
+		
+		// first, we check for a slope below us before moving
+		// only check slopes if we are going down and grounded
+		if( deltaMovement.y < 0 && wasGroundedBeforeMoving )
+			handleVerticalSlope( ref deltaMovement );
+		
+		// now we check movement in the horizontal dir
+		if( deltaMovement.x != 0 )
+			moveHorizontally( ref deltaMovement );
+		
+		// next, check movement in the vertical dir
+		if( deltaMovement.y != 0 )
+			moveVertically( ref deltaMovement );
+		
+		
+		// move then update our state
+		if( usePhysicsForMovement )
+		{
+#if UNITY_4_5 || UNITY_4_6
+			rigidbody2D.MovePosition( transform.position + deltaMovement );
+#else
+			rigidbody2D.velocity = deltaMovement / Time.fixedDeltaTime;
+#endif
+			velocity = rigidbody2D.velocity;
+		}
+		else
+		{
+			transform.Translate( deltaMovement );
+			velocity = deltaMovement / Time.deltaTime;
+		}
+		
+		// set our becameGrounded state based on the previous and current collision state
+		if( !wasGroundedBeforeMoving && collisionState.below )
+			collisionState.becameGroundedThisFrame = true;
+		
+		// send off the collision events if we have a listener
+		if( onControllerCollidedEvent != null )
+		{
+			for( var i = 0; i < _raycastHitsThisFrame.Count; i++ )
+				onControllerCollidedEvent( _raycastHitsThisFrame[i] );
+		}
+	}
+
 
 	/// <summary>
 	/// this should be called anytime you have to modify the BoxCollider2D at runtime. It will recalculate the distance between the rays used for collision detection.
@@ -285,7 +350,7 @@ public class CharacterController2D : MonoBehaviour
 	#endregion
 
 
-	#region Movement
+	#region Private Movement Methods
 
 	/// <summary>
 	/// resets the raycastOrigins to the current extents of the box collider inset by the skinWidth. It is inset
@@ -399,7 +464,7 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.left = true;
 				}
 
-				// smooth y movement when we climb. we make the y movement equivalent to the actual y location the corresponds
+				// smooth y movement when we climb. we make the y movement equivalent to the actual y location that corresponds
 				// to our new x location using our good friend Pythagoras
 				deltaMovement.y = Mathf.Abs( Mathf.Tan( angle * Mathf.Deg2Rad ) * deltaMovement.x );
 
@@ -493,70 +558,17 @@ public class CharacterController2D : MonoBehaviour
 			var isMovingDownSlope = Mathf.Sign( _raycastHit.normal.x ) == Mathf.Sign( deltaMovement.x );
 			if( isMovingDownSlope )
 			{
-				// going down we want to speed up proportionally to the slope so we use 1 + 1 - modifier to get that value
-				var slopeModifier = 1f + 1f - slopeSpeedMultiplier.Evaluate( -angle );
+				// going down we want to speed up in most cases so the slopeSpeedMultiplier curve should be > 1 for negative angles
+				var slopeModifier = slopeSpeedMultiplier.Evaluate( -angle );
 				deltaMovement.y = _raycastHit.point.y - slopeRay.y;
 				deltaMovement.x *= slopeModifier;
+				collisionState.movingDownSlope = true;
+				collisionState.slopeAngle = angle;
 			}
 		}
 	}
 
 	#endregion
 	
-
-	public void move( Vector3 deltaMovement )
-	{
-		// save off our current grounded state
-		var wasGroundedBeforeMoving = collisionState.below;
-
-		// clear our state
-		collisionState.reset();
-		_raycastHitsThisFrame.Clear();
-
-		var desiredPosition = transform.position + deltaMovement;
-		primeRaycastOrigins( desiredPosition, deltaMovement );
-
-
-		// first, we check for a slope below us before moving
-		// only check slopes if we are going down and grounded
-		if( deltaMovement.y < 0 && wasGroundedBeforeMoving )
-			handleVerticalSlope( ref deltaMovement );
-
-		// now we check movement in the horizontal dir
-		if( deltaMovement.x != 0 )
-			moveHorizontally( ref deltaMovement );
-
-		// next, check movement in the vertical dir
-		if( deltaMovement.y != 0 )
-			moveVertically( ref deltaMovement );
-
-
-		// move then update our state
-		if( usePhysicsForMovement )
-		{
-#if UNITY_4_5 || UNITY_4_6
-			rigidbody2D.MovePosition( transform.position + deltaMovement );
-#else
-			rigidbody2D.velocity = deltaMovement / Time.fixedDeltaTime;
-#endif
-			velocity = rigidbody2D.velocity;
-		}
-		else
-		{
-			transform.Translate( deltaMovement );
-			velocity = deltaMovement / Time.deltaTime;
-		}
-
-		// set our becameGrounded state based on the previous and current collision state
-		if( !wasGroundedBeforeMoving && collisionState.below )
-			collisionState.becameGroundedThisFrame = true;
-
-		// send off the collision events if we have a listener
-		if( onControllerCollidedEvent != null )
-		{
-			for( var i = 0; i < _raycastHitsThisFrame.Count; i++ )
-				onControllerCollidedEvent( _raycastHitsThisFrame[i] );
-		}
-	}
-
+	
 }
