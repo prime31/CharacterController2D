@@ -439,15 +439,14 @@ public class CharacterController2D : MonoBehaviour
 				var slopeModifier = slopeSpeedMultiplier.Evaluate( angle );
 				deltaMovement.x *= slopeModifier;
 
+				// we dont set collisions on the sides for this since a slope is not technically a side collision
 				if( isGoingRight )
 				{
 					deltaMovement.x -= _skinWidth;
-					collisionState.right = true;
 				}
 				else
 				{
 					deltaMovement.x += _skinWidth;
-					collisionState.left = true;
 				}
 
 				// smooth y movement when we climb. we make the y movement equivalent to the actual y location that corresponds
