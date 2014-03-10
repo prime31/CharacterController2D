@@ -97,12 +97,12 @@ public class CharacterController2D : MonoBehaviour
 	private LayerMask oneWayPlatformMask = 0;
 
 	
-	[Range( 0, 90f )]
 	/// <summary>
 	/// the max slope angle that the CC2D can climb
 	/// </summary>
 	/// <value>The slope limit.</value>
-	private float slopeLimit = 30f;
+	[Range( 0, 90f )]
+	public float slopeLimit = 30f;
 
 
 	/// <summary>
