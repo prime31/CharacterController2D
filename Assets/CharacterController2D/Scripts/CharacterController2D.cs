@@ -96,26 +96,13 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField]
 	private LayerMask oneWayPlatformMask = 0;
 
-
+	
+	[Range( 0, 90f )]
 	/// <summary>
 	/// the max slope angle that the CC2D can climb
 	/// </summary>
 	/// <value>The slope limit.</value>
-	public float slopeLimit
-	{
-		get { return _slopeLimit; }
-		set
-		{
-			_slopeLimit = value;
-			// TODO: we use 2x the slopeLimit to figure out our eventual ray length. Is there a better way? Does this cover
-			// all use cases?
-			_slopeLimitTangent = Mathf.Tan( 2f * _slopeLimit * Mathf.Deg2Rad );
-		}
-	}
-
-	[SerializeField]
-	[Range( 0, 90f )]
-	private float _slopeLimit = 30f;
+	private float slopeLimit = 30f;
 
 
 	/// <summary>
@@ -130,10 +117,10 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
-	/// this is used to calculate the downward ray that is cast to check for slopes. It is cached because there is no reason to calculate a tangent every frame.
-	/// It relies on the slopeLimit which is why the slopeLimit is a property. The setter recalculates the slopeLimitTangent.
+	/// this is used to calculate the downward ray that is cast to check for slopes. We use the somewhat arbitray value 75 degrees
+	/// to calcuate the lenght of the ray that checks for slopes.
 	/// </summary>
-	private float _slopeLimitTangent;
+	private float _slopeLimitTangent = Mathf.Tan( 75f * Mathf.Deg2Rad );
 
 
 	/// <summary>
@@ -207,7 +194,6 @@ public class CharacterController2D : MonoBehaviour
 			createTriggerHelper();
 
 		// here, we trigger our properties that have setters with bodies
-		slopeLimit = _slopeLimit;
 		skinWidth = _skinWidth;
 	}
 
@@ -443,7 +429,7 @@ public class CharacterController2D : MonoBehaviour
 			return false;
 
 		// if we can walk on slopes and our angle is small enough we need to move up
-		if( angle < _slopeLimit )
+		if( angle < slopeLimit )
 		{
 			// we only need to adjust the y movement if we are not jumping
 			// TODO: this uses a magic number which isn't ideal!
@@ -541,7 +527,7 @@ public class CharacterController2D : MonoBehaviour
 		var centerOfCollider = ( _raycastOrigins.bottomLeft.x + _raycastOrigins.bottomRight.x ) * 0.5f;
 		var rayDirection = -Vector2.up;
 
-		// the ray distance is based on our slopeLimit. we will check for slopes up to 2x our slopeLimit
+		// the ray distance is based on our slopeLimit
 		var slopeCheckRayDistance = _slopeLimitTangent * ( _raycastOrigins.bottomRight.x - centerOfCollider );
 		
 		var slopeRay = new Vector2( centerOfCollider, _raycastOrigins.bottomLeft.y );
