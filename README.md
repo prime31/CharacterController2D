@@ -27,7 +27,7 @@ One demo scene (Non-Physics-Based folder) does not use the physics system for mo
 Basic Setup
 =====================
 
-Setup is pretty simple: drag the CharacterController2D onto your player/enemy GameObject and set the *platformMask* in the inspector to contain any layers that you want the player to collide with. If you will be using one way platforms, you can set the *oneWayPlatformMask* as well. Note that one way platforms should be EdgeCollider2Ds. *ProTip*: make sure your player is on a separate layer than your platforms so that she doesn't try to collide with herself!
+Setup is pretty simple: drag the CharacterController2D onto your player/enemy GameObject and set the *platformMask* in the inspector to contain any layers that you want the player to collide with. If you will be using one way platforms, you can set the *oneWayPlatformMask* as well. Note that one way platforms should be EdgeCollider2Ds. *ProTip*: make sure your player is on a separate layer than your platforms so that she doesn't try to collide with herself! You will also want to make sure you BoxCollider2D is centered and has a zero horizontal offset. Flipping requires setting the scale.x to -1 so a horizontal offset other than zero will result in the collider jumping around.
 
 From there you can tweak the *totalHorizontalRays* and *totalVerticalRays* to your liking. When in the editor rays will be drawn with *Debug.DrawRay* so that you can make sure the ray resolution is appropriate for your smallest platform size. To turn off ray debugging just comment out the *#define DEBUG_CC2D_RAYS* line at the top of the CharacterController2D.cs file.
 
