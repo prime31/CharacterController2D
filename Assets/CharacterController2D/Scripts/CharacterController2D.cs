@@ -239,8 +239,7 @@ public class CharacterController2D : MonoBehaviour
 		collisionState.reset();
 		_raycastHitsThisFrame.Clear();
 
-		var desiredPosition = transform.position + deltaMovement;
-		primeRaycastOrigins( desiredPosition, deltaMovement );
+		primeRaycastOrigins();
 
 
 		// first, we check for a slope below us before moving
@@ -342,9 +341,7 @@ public class CharacterController2D : MonoBehaviour
 	/// resets the raycastOrigins to the current extents of the box collider inset by the skinWidth. It is inset
 	/// to avoid casting a ray from a position directly touching another collider which results in wonky normal data.
 	/// </summary>
-	/// <param name="futurePosition">Future position.</param>
-	/// <param name="deltaMovement">Delta movement.</param>
-	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
+	private void primeRaycastOrigins()
 	{
 		var scaledColliderSize = new Vector2( boxCollider.size.x * Mathf.Abs( transform.localScale.x ), boxCollider.size.y * Mathf.Abs( transform.localScale.y ) ) / 2;
 		var scaledCenter = new Vector2( boxCollider.center.x * transform.localScale.x, boxCollider.center.y * transform.localScale.y );
