@@ -239,7 +239,6 @@ public class CharacterController2D : MonoBehaviour
 		collisionState.reset();
 		_raycastHitsThisFrame.Clear();
 
-		var desiredPosition = transform.position + deltaMovement;
 		primeRaycastOrigins();
 
 
