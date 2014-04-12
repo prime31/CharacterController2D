@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-[RequireComponent( typeof( BoxCollider2D ), typeof( Rigidbody2D ) )]
+[RequireComponent( typeof( BoxCollider2D ) )]
 public class CharacterController2D : MonoBehaviour
 {
 	#region internal types
@@ -259,6 +259,9 @@ public class CharacterController2D : MonoBehaviour
 		// move then update our state
 		if( usePhysicsForMovement )
 		{
+			if( rigidbody2D == null )
+				rigidBody2D = gameObject.AddComponent<Rigidbody2D>() as Rigidbody2D;
+
 #if UNITY_4_5 || UNITY_4_6
 			rigidbody2D.MovePosition( transform.position + deltaMovement );
 #else
