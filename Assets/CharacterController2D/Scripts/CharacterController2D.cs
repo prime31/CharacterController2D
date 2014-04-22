@@ -269,7 +269,10 @@ public class CharacterController2D : MonoBehaviour
 		else
 		{
 			transform.Translate( deltaMovement );
-			velocity = deltaMovement / Time.deltaTime;
+			
+			// only calculate velocity if we have a non-zero deltaTime
+			if( Time.deltaTime > 0 )
+				velocity = deltaMovement / Time.deltaTime;
 		}
 
 		// set our becameGrounded state based on the previous and current collision state
