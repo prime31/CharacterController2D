@@ -133,18 +133,16 @@ public class CharacterController2D : MonoBehaviour
 	public float triggerHelperBoxColliderScale = 0.95f;
 
 
-	[HideInInspector]
+	[HideInInspector][NonSerialized]
 	public new Transform transform;
-	[HideInInspector]
+	[HideInInspector][NonSerialized]
 	public BoxCollider2D boxCollider;
-	[HideInInspector]
+	[HideInInspector][NonSerialized]
 	public Rigidbody2D rigidBody2D;
 
-	[HideInInspector]
-	[NonSerialized]
+	[HideInInspector][NonSerialized]
 	public CharacterCollisionState2D collisionState = new CharacterCollisionState2D();
-	[HideInInspector]
-	[NonSerialized]
+	[HideInInspector][NonSerialized]
 	public Vector3 velocity;
 	public bool isGrounded { get { return collisionState.below; } }
 
