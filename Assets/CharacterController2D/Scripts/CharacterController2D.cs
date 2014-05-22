@@ -117,8 +117,8 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
-	/// this is used to calculate the downward ray that is cast to check for slopes. We use the somewhat arbitray value 75 degrees
-	/// to calcuate the lenght of the ray that checks for slopes.
+	/// this is used to calculate the downward ray that is cast to check for slopes. We use the somewhat arbitrary value 75 degrees
+	/// to calculate the length of the ray that checks for slopes.
 	/// </summary>
 	private float _slopeLimitTangent = Mathf.Tan( 75f * Mathf.Deg2Rad );
 
@@ -170,7 +170,7 @@ public class CharacterController2D : MonoBehaviour
 	// horizontal/vertical movement data
 	private float _verticalDistanceBetweenRays;
 	private float _horizontalDistanceBetweenRays;
-	// we use this flag to mark the case where we are travelling up a slope and we modified our delta.y to allow it
+	// we use this flag to mark the case where we are travelling up a slope and we modified our delta.y to allow the climb to occur.
 	// the reason is so that if we reach the end of the slope we can make an adjustment to stay grounded
 	private bool _isGoingUpSlope = false;
 
@@ -567,7 +567,7 @@ public class CharacterController2D : MonoBehaviour
 			{
 				// going down we want to speed up in most cases so the slopeSpeedMultiplier curve should be > 1 for negative angles
 				var slopeModifier = slopeSpeedMultiplier.Evaluate( -angle );
-				deltaMovement.y = _raycastHit.point.y - slopeRay.y;
+				deltaMovement.y = _raycastHit.point.y - slopeRay.y - skinWidth;
 				deltaMovement.x *= slopeModifier;
 				collisionState.movingDownSlope = true;
 				collisionState.slopeAngle = angle;
