@@ -322,6 +322,7 @@ public class CharacterController2D : MonoBehaviour
 		var go = new GameObject( "PlayerTriggerHelper" );
 		go.hideFlags = HideFlags.HideInHierarchy;
 		go.layer = gameObject.layer;
+		go.tag = gameObject.tag;
 		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
 		go.transform.localScale = transform.localScale * triggerHelperBoxColliderScale;
 
