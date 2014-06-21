@@ -232,6 +232,11 @@ public class CharacterController2D : MonoBehaviour
 
 	#region Public
 
+	/// <summary>
+	/// attempts to move the character to position + deltaMovement. Any colliders in the way will cause the movement to
+	/// stop when run into.
+	/// </summary>
+	/// <param name="deltaMovement">Delta movement.</param>
 	public void move( Vector3 deltaMovement )
 	{
 		// save off our current grounded state which we will use for wasGroundedLastFrame and becameGroundedThisFrame
@@ -293,6 +298,18 @@ public class CharacterController2D : MonoBehaviour
 			for( var i = 0; i < _raycastHitsThisFrame.Count; i++ )
 				onControllerCollidedEvent( _raycastHitsThisFrame[i] );
 		}
+	}
+
+
+	/// <summary>
+	/// moves directly down until grounded
+	/// </summary>
+	public void warpToGrounded()
+	{
+		do
+		{
+			move( new Vector3( 0, -1f, 0 ) );
+		} while( !isGrounded );
 	}
 
 
