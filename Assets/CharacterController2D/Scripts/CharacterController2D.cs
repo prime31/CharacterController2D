@@ -269,7 +269,7 @@ public class CharacterController2D : MonoBehaviour
 		else
 		{
 			transform.Translate( deltaMovement, Space.World );
-			
+
 			// only calculate velocity if we have a non-zero deltaTime
 			if( Time.deltaTime > 0 )
 				velocity = deltaMovement / Time.deltaTime;
@@ -313,6 +313,7 @@ public class CharacterController2D : MonoBehaviour
 	public GameObject createTriggerHelper()
 	{
 		var go = new GameObject( "PlayerTriggerHelper" );
+		go.transform.position = transform.position;
 		go.hideFlags = HideFlags.HideInHierarchy;
 		go.layer = gameObject.layer;
 		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
