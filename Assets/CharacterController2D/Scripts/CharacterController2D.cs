@@ -425,7 +425,7 @@ public class CharacterController2D : MonoBehaviour
 			if( _raycastHit )
 			{
 				// the bottom ray can hit slopes but no other ray can so we have special handling for those cases
-				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), isGoingRight ) )
+				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), Mathf.Abs( _raycastHit.point.x - ray.x ) - _skinWidth ) )
 				{
 					_raycastHitsThisFrame.Add( _raycastHit );
 					break;
@@ -464,8 +464,8 @@ public class CharacterController2D : MonoBehaviour
 	/// <returns><c>true</c>, if horizontal slope was handled, <c>false</c> otherwise.</returns>
 	/// <param name="deltaMovement">Delta movement.</param>
 	/// <param name="angle">Angle.</param>
-	/// <param name="isGoingRight">If set to <c>true</c> is going right.</param>
-	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle, bool isGoingRight )
+	/// <param name="distanceToSlope">The distance that must be traveled before we're on the slope</param>
+	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle, float distanceToSlope )
 	{
 		// disregard 90 degree angles (walls)
 		if( Mathf.RoundToInt( angle ) == 90 )
@@ -484,9 +484,20 @@ public class CharacterController2D : MonoBehaviour
 
 				// we dont set collisions on the sides for this since a slope is not technically a side collision
 
+				// Remove the distance it took us to reach the slope before calculating ascension
+				// This does not impact our X movement, but can reduce our Y movement calculation
+				var adjustedX = Mathf.Abs( deltaMovement.x );
+				if( distanceToSlope > 0 )
+					adjustedX -= distanceToSlope;
+
+				// Because movement speed is reduced when climbing, we may not actually reach the slope this tick
+				// If so, this cancels any Y ascension since we haven't actually climbed
+				if( adjustedX < 0 )
+					adjustedX = 0;
+
 				// smooth y movement when we climb. we make the y movement equivalent to the actual y location that corresponds
 				// to our new x location using our good friend Pythagoras
-				deltaMovement.y = Mathf.Abs( Mathf.Tan( angle * Mathf.Deg2Rad ) * deltaMovement.x );
+				deltaMovement.y = Mathf.Abs( Mathf.Tan( angle * Mathf.Deg2Rad ) * adjustedX);
 				_isGoingUpSlope = true;
 
 				collisionState.below = true;
