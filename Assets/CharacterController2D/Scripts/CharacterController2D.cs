@@ -425,7 +425,7 @@ public class CharacterController2D : MonoBehaviour
 			if( _raycastHit )
 			{
 				// the bottom ray can hit slopes but no other ray can so we have special handling for those cases
-				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), Mathf.Abs(_raycastHit.point.x - ray.x) - _skinWidth ) )
+				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), Mathf.Abs( _raycastHit.point.x - ray.x ) - _skinWidth ) )
 				{
 					_raycastHitsThisFrame.Add( _raycastHit );
 					break;
@@ -464,7 +464,7 @@ public class CharacterController2D : MonoBehaviour
 	/// <returns><c>true</c>, if horizontal slope was handled, <c>false</c> otherwise.</returns>
 	/// <param name="deltaMovement">Delta movement.</param>
 	/// <param name="angle">Angle.</param>
-	/// <param name="distanceToSlope">The distance that must be traveled before we're on the slope</param> 
+	/// <param name="distanceToSlope">The distance that must be traveled before we're on the slope</param>
 	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle, float distanceToSlope )
 	{
 		// disregard 90 degree angles (walls)
@@ -486,12 +486,13 @@ public class CharacterController2D : MonoBehaviour
 
 				// Remove the distance it took us to reach the slope before calculating ascension
 				// This does not impact our X movement, but can reduce our Y movement calculation
-				float adjustedX = Mathf.Abs(deltaMovement.x);
-				if (distanceToSlope > 0)
+				var adjustedX = Mathf.Abs( deltaMovement.x );
+				if( distanceToSlope > 0 )
 					adjustedX -= distanceToSlope;
+
 				// Because movement speed is reduced when climbing, we may not actually reach the slope this tick
 				// If so, this cancels any Y ascension since we haven't actually climbed
-				if (adjustedX < 0) 
+				if( adjustedX < 0 )
 					adjustedX = 0;
 
 				// smooth y movement when we climb. we make the y movement equivalent to the actual y location that corresponds
