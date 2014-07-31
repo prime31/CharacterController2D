@@ -425,7 +425,7 @@ public class CharacterController2D : MonoBehaviour
 			if( _raycastHit )
 			{
 				// the bottom ray can hit slopes but no other ray can so we have special handling for those cases
-				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ), isGoingRight ) )
+				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ) ) )
 				{
 					_raycastHitsThisFrame.Add( _raycastHit );
 					break;
@@ -464,8 +464,7 @@ public class CharacterController2D : MonoBehaviour
 	/// <returns><c>true</c>, if horizontal slope was handled, <c>false</c> otherwise.</returns>
 	/// <param name="deltaMovement">Delta movement.</param>
 	/// <param name="angle">Angle.</param>
-	/// <param name="isGoingRight">If set to <c>true</c> is going right.</param>
-	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle, bool isGoingRight )
+	private bool handleHorizontalSlope( ref Vector3 deltaMovement, float angle )
 	{
 		// disregard 90 degree angles (walls)
 		if( Mathf.RoundToInt( angle ) == 90 )
