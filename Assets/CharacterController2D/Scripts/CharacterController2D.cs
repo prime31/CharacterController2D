@@ -188,10 +188,6 @@ public class CharacterController2D : MonoBehaviour
 		boxCollider = GetComponent<BoxCollider2D>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 
-		// we dont have a bounds property until Unity 4.5+ so we really don't need the BoxCollider2D to be active since we just use
-		// it for it's size and center properties so might as well remove it from play
-		boxCollider.enabled = false;
-
 		if( createTriggerHelperGameObject )
 			createTriggerHelper();
 
