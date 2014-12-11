@@ -106,11 +106,11 @@ public class CharacterController2D : MonoBehaviour
 	public float slopeLimit = 30f;
 
 
-    /// <summary>
-    /// the threshold in the change in vertical movement between frames that constitutes jumping
-    /// </summary>
-    /// <value>The jumping threshold.</value>
-    public float jumpingThreshold = 0.07f;
+	/// <summary>
+	/// the threshold in the change in vertical movement between frames that constitutes jumping
+	/// </summary>
+	/// <value>The jumping threshold.</value>
+	public float jumpingThreshold = 0.07f;
 
 
 	/// <summary>
