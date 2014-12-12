@@ -11,7 +11,6 @@ public class CharacterController2D : MonoBehaviour
 
 	private struct CharacterRaycastOrigins
 	{
-		public Vector3 topRight;
 		public Vector3 topLeft;
 		public Vector3 bottomRight;
 		public Vector3 bottomLeft;
@@ -91,12 +90,16 @@ public class CharacterController2D : MonoBehaviour
 	public LayerMask platformMask = 0;
 
 	/// <summary>
+	/// mask with all layers that trigger events should fire when intersected
+	/// </summary>
+	public LayerMask triggerMask = 0;
+
+	/// <summary>
 	/// mask with all layers that should act as one-way platforms. Note that one-way platforms should always be EdgeCollider2Ds. This is private because it does not support being
 	/// updated anytime outside of the inspector for now.
 	/// </summary>
 	[SerializeField]
 	private LayerMask oneWayPlatformMask = 0;
-
 
 	/// <summary>
 	/// the max slope angle that the CC2D can climb
@@ -104,7 +107,6 @@ public class CharacterController2D : MonoBehaviour
 	/// <value>The slope limit.</value>
 	[Range( 0, 90f )]
 	public float slopeLimit = 30f;
-
 
 	/// <summary>
 	/// the threshold in the change in vertical movement between frames that constitutes jumping
@@ -129,13 +131,6 @@ public class CharacterController2D : MonoBehaviour
 	/// to calculate the length of the ray that checks for slopes.
 	/// </summary>
 	private float _slopeLimitTangent = Mathf.Tan( 75f * Mathf.Deg2Rad );
-
-
-	/// <summary>
-	/// if true, a new GameObject named CC2DTriggerHelper will be created in Awake and latched on via a DistanceJoint2D
-	/// to the player so that trigger messages can be received
-	/// </summary>
-	public bool createTriggerHelperGameObject = false;
 
 	[Range( 0.8f, 0.999f )]
 	public float triggerHelperBoxColliderScale = 0.95f;
@@ -195,11 +190,16 @@ public class CharacterController2D : MonoBehaviour
 		boxCollider = GetComponent<BoxCollider2D>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 
-		if( createTriggerHelperGameObject )
-			createTriggerHelper();
-
 		// here, we trigger our properties that have setters with bodies
 		skinWidth = _skinWidth;
+
+		// we want to set our CC2D to ignore all collision layers except what is in our triggerMask
+		for( var i = 0; i < 32; i++ )
+		{
+			// see if our triggerMask contains this layer and if not ignore it
+			if( ( triggerMask.value & 1 << i ) == 0 )
+				Physics2D.IgnoreLayerCollision( gameObject.layer, i );
+		}
 	}
 
 
@@ -271,11 +271,7 @@ public class CharacterController2D : MonoBehaviour
 		// move then update our state
 		if( usePhysicsForMovement )
 		{
-#if UNITY_4_5 || UNITY_4_6
 			rigidbody2D.MovePosition( transform.position + deltaMovement );
-#else
-			rigidbody2D.velocity = deltaMovement / Time.fixedDeltaTime;
-#endif
 			velocity = rigidbody2D.velocity;
 		}
 		else
@@ -332,39 +328,6 @@ public class CharacterController2D : MonoBehaviour
 		_horizontalDistanceBetweenRays = colliderUseableWidth / ( totalVerticalRays - 1 );
 	}
 
-
-	/// <summary>
-	/// this is called internally if createTriggerHelperGameObject is true. It is provided as a public method
-	/// in case you want to grab a handle on the GO created to modify it in some way. Note that by default only
-	/// collisions with triggers will be allowed to pass through and fire the events.
-	/// </summary>
-	public GameObject createTriggerHelper()
-	{
-		var go = new GameObject( "PlayerTriggerHelper" );
-		go.transform.position = transform.position;
-		go.hideFlags = HideFlags.HideInHierarchy;
-		go.layer = gameObject.layer;
-		go.tag = gameObject.tag;
-		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
-		go.transform.localScale = transform.localScale * triggerHelperBoxColliderScale;
-
-		go.AddComponent<CC2DTriggerHelper>().setParentCharacterController( this );
-
-		var rb = go.AddComponent<Rigidbody2D>();
-		rb.mass = 0f;
-		rb.gravityScale = 0f;
-
-		var bc = go.AddComponent<BoxCollider2D>();
-		bc.size = boxCollider.size;
-		bc.isTrigger = true;
-
-		var joint = go.AddComponent<DistanceJoint2D>();
-		joint.connectedBody = rigidbody2D;
-		joint.distance = 0f;
-
-		return go;
-	}
-
 	#endregion
 
 
@@ -378,24 +341,13 @@ public class CharacterController2D : MonoBehaviour
 	/// <param name="deltaMovement">Delta movement.</param>
 	private void primeRaycastOrigins( Vector3 futurePosition, Vector3 deltaMovement )
 	{
-		var scaledColliderSize = new Vector2( boxCollider.size.x * Mathf.Abs( transform.localScale.x ), boxCollider.size.y * Mathf.Abs( transform.localScale.y ) ) / 2;
-		var scaledCenter = new Vector2( boxCollider.center.x * transform.localScale.x, boxCollider.center.y * transform.localScale.y );
+		// our raycasts need to be fired from the bounds inset by the skinWidth
+		var modifiedBounds = boxCollider.bounds;
+		modifiedBounds.Expand( -_skinWidth );
 
-		_raycastOrigins.topRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
-		_raycastOrigins.topRight.x -= _skinWidth;
-		_raycastOrigins.topRight.y -= _skinWidth;
-
-		_raycastOrigins.topLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y + scaledColliderSize.y );
-		_raycastOrigins.topLeft.x += _skinWidth;
-		_raycastOrigins.topLeft.y -= _skinWidth;
-
-		_raycastOrigins.bottomRight = transform.position + new Vector3( scaledCenter.x + scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
-		_raycastOrigins.bottomRight.x -= _skinWidth;
-		_raycastOrigins.bottomRight.y += _skinWidth;
-
-		_raycastOrigins.bottomLeft = transform.position + new Vector3( scaledCenter.x - scaledColliderSize.x, scaledCenter.y -scaledColliderSize.y );
-		_raycastOrigins.bottomLeft.x += _skinWidth;
-		_raycastOrigins.bottomLeft.y += _skinWidth;
+		_raycastOrigins.topLeft = new Vector2( modifiedBounds.min.x, modifiedBounds.max.y );
+		_raycastOrigins.bottomRight = new Vector2( modifiedBounds.max.x, modifiedBounds.min.y );
+		_raycastOrigins.bottomLeft = modifiedBounds.min;
 	}
 
 

@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class NonPhysicsPlayerTester : MonoBehaviour
+public class DemoScene : MonoBehaviour
 {
 	// movement config
 	public float gravity = -25f;
