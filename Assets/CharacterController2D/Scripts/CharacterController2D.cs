@@ -107,6 +107,13 @@ public class CharacterController2D : MonoBehaviour
 
 
 	/// <summary>
+	/// the threshold in the change in vertical movement between frames that constitutes jumping
+	/// </summary>
+	/// <value>The jumping threshold.</value>
+	public float jumpingThreshold = 0.07f;
+
+
+	/// <summary>
 	/// curve for multiplying speed based on slope (negative = down slope and positive = up slope)
 	/// </summary>
 	public AnimationCurve slopeSpeedMultiplier = new AnimationCurve( new Keyframe( -90, 1.5f ), new Keyframe( 0, 1 ), new Keyframe( 90, 0 ) );
@@ -471,7 +478,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			// we only need to adjust the deltaMovement if we are not jumping
 			// TODO: this uses a magic number which isn't ideal!
-			if( deltaMovement.y < 0.07f )
+			if( deltaMovement.y < jumpingThreshold )
 			{
 				// apply the slopeModifier to slow our movement up the slope
 				var slopeModifier = slopeSpeedMultiplier.Evaluate( angle );
