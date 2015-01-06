@@ -343,7 +343,7 @@ public class CharacterController2D : MonoBehaviour
 	{
 		// our raycasts need to be fired from the bounds inset by the skinWidth
 		var modifiedBounds = boxCollider.bounds;
-		modifiedBounds.Expand( -_skinWidth );
+		modifiedBounds.Expand( -2f * _skinWidth );
 
 		_raycastOrigins.topLeft = new Vector2( modifiedBounds.min.x, modifiedBounds.max.y );
 		_raycastOrigins.bottomRight = new Vector2( modifiedBounds.max.x, modifiedBounds.min.y );
