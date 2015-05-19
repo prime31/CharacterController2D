@@ -271,8 +271,8 @@ public class CharacterController2D : MonoBehaviour
 		// move then update our state
 		if( usePhysicsForMovement )
 		{
-			GetComponent<Rigidbody2D>().MovePosition( transform.position + deltaMovement );
-			velocity = GetComponent<Rigidbody2D>().velocity;
+			rigidBody2D.MovePosition( transform.position + deltaMovement );
+			velocity = rigidBody2D.velocity;
 		}
 		else
 		{
