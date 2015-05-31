@@ -54,6 +54,7 @@ public class CharacterController2D : MonoBehaviour
 	#region events, properties and fields
 
 	public event Action<RaycastHit2D> onControllerCollidedEvent;
+	public event Action<RaycastHit2D> onControllerUncollidedEvent;
 	public event Action<Collider2D> onTriggerEnterEvent;
 	public event Action<Collider2D> onTriggerStayEvent;
 	public event Action<Collider2D> onTriggerExitEvent;
@@ -170,6 +171,12 @@ public class CharacterController2D : MonoBehaviour
 	/// </summary>
 	private List<RaycastHit2D> _raycastHitsThisFrame = new List<RaycastHit2D>( 2 );
 
+	/// <summary>
+	/// stores any raycast hits that occur on the last frame. we have to store them to check if the character
+	/// has some collid exit event
+	/// </summary>
+	private List<RaycastHit2D> _raycastHitsThisLastFrame = new List<RaycastHit2D>( 2 );
+	
 	// horizontal/vertical movement data
 	private float _verticalDistanceBetweenRays;
 	private float _horizontalDistanceBetweenRays;
@@ -247,7 +254,13 @@ public class CharacterController2D : MonoBehaviour
 
 		// clear our state
 		collisionState.reset();
-		_raycastHitsThisFrame.Clear();
+		
+		List<RaycastHit2D> temp = _raycastHitsThisLastFrame;
+		temp.Clear();
+		
+	        _raycastHitsThisLastFrame = _raycastHitsThisFrame;
+	        _raycastHitsThisFrame = temp;
+		
 		_isGoingUpSlope = false;
 
 		var desiredPosition = transform.position + deltaMovement;
@@ -296,6 +309,16 @@ public class CharacterController2D : MonoBehaviour
 		{
 			for( var i = 0; i < _raycastHitsThisFrame.Count; i++ )
 				onControllerCollidedEvent( _raycastHitsThisFrame[i] );
+		}
+		
+		// send off the collision exit events if we have a listener
+		if (onControllerUncollidedEvent != null) 
+		{
+			foreach(RaycastHit2D exitRay in _raycastHitsThisLastFrame)
+			{
+				if(_raycastHitsThisFrame.FindIndex(ray => ray.transform == exitRay.transform) == -1)
+					onControllerUncollidedEvent(exitRay);
+			}
 		}
 	}
 
