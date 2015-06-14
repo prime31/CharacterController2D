@@ -1,6 +1,80 @@
 fileFormatVersion: 2
 guid: 0370ca45554824e75921d7740a78749e
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: idle
+    21300002: duck
+    21300004: spelunky_animations_2
+    21300006: duck_1
+    21300008: duck_2
+    21300010: duck_3
+    21300012: crawl_1
+    21300014: crawl_2
+    21300016: crawl_3
+    21300018: crawl_4
+    21300020: crawl_5
+    21300022: crawl_6
+    21300024: crawl_7
+    21300026: run_1
+    21300028: run_2
+    21300030: run_3
+    21300032: run_4
+    21300034: run_5
+    21300036: run_6
+    21300038: run_7
+    21300040: run_8
+    21300042: teeter_1
+    21300044: teeter_2
+    21300046: teeter_3
+    21300048: teeter_4
+    21300050: teeter_5
+    21300052: teeter_6
+    21300054: teeter_7
+    21300056: teeter_8
+    21300058: ledge_hang_1
+    21300060: ledge_hang_2
+    21300062: ledge_hang_3
+    21300064: ledge_hang_4
+    21300066: throw_1
+    21300068: throw_2
+    21300070: throw_3
+    21300072: throw_4
+    21300074: throw_5
+    21300076: push_1
+    21300078: push_2
+    21300080: push_3
+    21300082: push_4
+    21300084: push_5
+    21300086: push_6
+    21300088: spelunky_animations_44
+    21300090: spelunky_animations_45
+    21300092: spelunky_animations_46
+    21300094: spelunky_animations_47
+    21300096: spelunky_animations_48
+    21300098: spelunky_animations_49
+    21300100: rope_climb_01
+    21300102: rope_climb_02
+    21300104: rope_climb_03
+    21300106: rope_climb_04
+    21300108: rope_climb_05
+    21300110: rope_climb_06
+    21300112: rope_climb_07
+    21300114: rope_climb_08
+    21300116: rope_climb_09
+    21300118: rope_climb_10
+    21300120: look_up_1
+    21300122: look_up_2
+    21300124: look_up_3
+    21300126: look_up_4
+    21300128: jump_1
+    21300130: jump_2
+    21300132: jump_3
+    21300134: jump_4
+    21300136: fall_1
+    21300138: fall_2
+    21300140: fall_3
+    21300142: fall_4
+    21300144: trigger-green
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -19,6 +93,9 @@ TextureImporter:
   isReadable: 0
   grayScaleToAlpha: 0
   generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -2
   maxTextureSize: 4096
@@ -29,12 +106,14 @@ TextureImporter:
     wrapMode: 1
   nPOTScale: 0
   lightmap: 0
+  rGBM: 0
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
   textureType: 8
@@ -50,6 +129,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: duck
       rect:
         serializedVersion: 2
@@ -59,6 +139,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_2
       rect:
         serializedVersion: 2
@@ -68,6 +149,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: duck_1
       rect:
         serializedVersion: 2
@@ -77,6 +159,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: duck_2
       rect:
         serializedVersion: 2
@@ -86,6 +169,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: duck_3
       rect:
         serializedVersion: 2
@@ -95,6 +179,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_1
       rect:
         serializedVersion: 2
@@ -104,6 +189,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_2
       rect:
         serializedVersion: 2
@@ -113,6 +199,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_3
       rect:
         serializedVersion: 2
@@ -122,6 +209,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_4
       rect:
         serializedVersion: 2
@@ -131,6 +219,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_5
       rect:
         serializedVersion: 2
@@ -140,6 +229,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_6
       rect:
         serializedVersion: 2
@@ -149,6 +239,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: crawl_7
       rect:
         serializedVersion: 2
@@ -158,6 +249,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_1
       rect:
         serializedVersion: 2
@@ -167,6 +259,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_2
       rect:
         serializedVersion: 2
@@ -176,6 +269,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_3
       rect:
         serializedVersion: 2
@@ -185,6 +279,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_4
       rect:
         serializedVersion: 2
@@ -194,6 +289,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_5
       rect:
         serializedVersion: 2
@@ -203,6 +299,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_6
       rect:
         serializedVersion: 2
@@ -212,6 +309,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_7
       rect:
         serializedVersion: 2
@@ -221,6 +319,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: run_8
       rect:
         serializedVersion: 2
@@ -230,6 +329,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_1
       rect:
         serializedVersion: 2
@@ -239,6 +339,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_2
       rect:
         serializedVersion: 2
@@ -248,6 +349,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_3
       rect:
         serializedVersion: 2
@@ -257,6 +359,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_4
       rect:
         serializedVersion: 2
@@ -266,6 +369,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_5
       rect:
         serializedVersion: 2
@@ -275,6 +379,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_6
       rect:
         serializedVersion: 2
@@ -284,6 +389,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_7
       rect:
         serializedVersion: 2
@@ -293,6 +399,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: teeter_8
       rect:
         serializedVersion: 2
@@ -302,6 +409,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: ledge_hang_1
       rect:
         serializedVersion: 2
@@ -311,6 +419,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: ledge_hang_2
       rect:
         serializedVersion: 2
@@ -320,6 +429,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: ledge_hang_3
       rect:
         serializedVersion: 2
@@ -329,6 +439,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: ledge_hang_4
       rect:
         serializedVersion: 2
@@ -338,6 +449,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: throw_1
       rect:
         serializedVersion: 2
@@ -347,6 +459,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: throw_2
       rect:
         serializedVersion: 2
@@ -356,6 +469,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: throw_3
       rect:
         serializedVersion: 2
@@ -365,6 +479,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: throw_4
       rect:
         serializedVersion: 2
@@ -374,6 +489,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: throw_5
       rect:
         serializedVersion: 2
@@ -383,6 +499,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_1
       rect:
         serializedVersion: 2
@@ -392,6 +509,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_2
       rect:
         serializedVersion: 2
@@ -401,6 +519,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_3
       rect:
         serializedVersion: 2
@@ -410,6 +529,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_4
       rect:
         serializedVersion: 2
@@ -419,6 +539,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_5
       rect:
         serializedVersion: 2
@@ -428,6 +549,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: push_6
       rect:
         serializedVersion: 2
@@ -437,6 +559,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_44
       rect:
         serializedVersion: 2
@@ -446,6 +569,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_45
       rect:
         serializedVersion: 2
@@ -455,6 +579,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_46
       rect:
         serializedVersion: 2
@@ -464,6 +589,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_47
       rect:
         serializedVersion: 2
@@ -473,6 +599,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_48
       rect:
         serializedVersion: 2
@@ -482,6 +609,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: spelunky_animations_49
       rect:
         serializedVersion: 2
@@ -491,6 +619,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_01
       rect:
         serializedVersion: 2
@@ -500,6 +629,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_02
       rect:
         serializedVersion: 2
@@ -509,6 +639,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_03
       rect:
         serializedVersion: 2
@@ -518,6 +649,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_04
       rect:
         serializedVersion: 2
@@ -527,6 +659,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_05
       rect:
         serializedVersion: 2
@@ -536,6 +669,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_06
       rect:
         serializedVersion: 2
@@ -545,6 +679,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_07
       rect:
         serializedVersion: 2
@@ -554,6 +689,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_08
       rect:
         serializedVersion: 2
@@ -563,6 +699,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_09
       rect:
         serializedVersion: 2
@@ -572,6 +709,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: rope_climb_10
       rect:
         serializedVersion: 2
@@ -581,6 +719,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: look_up_1
       rect:
         serializedVersion: 2
@@ -590,6 +729,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: look_up_2
       rect:
         serializedVersion: 2
@@ -599,6 +739,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: look_up_3
       rect:
         serializedVersion: 2
@@ -608,6 +749,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: look_up_4
       rect:
         serializedVersion: 2
@@ -617,6 +759,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: jump_1
       rect:
         serializedVersion: 2
@@ -626,6 +769,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: jump_2
       rect:
         serializedVersion: 2
@@ -635,6 +779,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: jump_3
       rect:
         serializedVersion: 2
@@ -644,6 +789,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: jump_4
       rect:
         serializedVersion: 2
@@ -653,6 +799,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: fall_1
       rect:
         serializedVersion: 2
@@ -662,6 +809,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: fall_2
       rect:
         serializedVersion: 2
@@ -671,6 +819,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: fall_3
       rect:
         serializedVersion: 2
@@ -680,6 +829,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: fall_4
       rect:
         serializedVersion: 2
@@ -689,6 +839,7 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: trigger-green
       rect:
         serializedVersion: 2
@@ -698,5 +849,8 @@ TextureImporter:
         height: 80
       alignment: 0
       pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 
