@@ -108,6 +108,14 @@ public class DemoScene : MonoBehaviour
 		// apply gravity before moving
 		_velocity.y += gravity * Time.deltaTime;
 
+		// if holding down bump up our movement amount and turn off one way platform detection for a frame.
+		// this lets uf jump down through one way platforms
+		if( _controller.isGrounded && Input.GetKey( KeyCode.DownArrow ) )
+		{
+			_velocity.y *= 3f;
+			_controller.ignoreOneWayPlatformsThisFrame = true;
+		}
+
 		_controller.move( _velocity * Time.deltaTime );
 
 		// grab our current _velocity to use as a base for all calculations
