@@ -7,17 +7,10 @@ A simple demo scene is included along with a few Spelunky sprites (which obvious
 
 
 
-A Word about Physics Based Movement
-=====================
-
-It is important to note that with regard to the CharacterController2D when the term "physics based movement" is used it does not mean that forces are used to move the player. CharacterController2D is made for cases where you need precision and full control so forces are never used to move the Transform. When the term "physics based movement" is used here it just means that the RigidBody2D's MovePosition method is used to move the Transform. For the CharacterController2D's non physics based movement Transform.Translate is used. In both cases (physics based and non physics based) all movement distance calculations are still made manually by the CharacterController2D.
-
-
-
 Demo Scene
 =====================
 
-The included demo scene is minimal to keep things as simple as possible. It has very basic input detection (using the arrow keys to move and jump) and a simple character sprite/Animator setup. This should be simple enough for anyone with a rudimentry knowledge of Unity to read through and understand.
+The included demo scene is minimal to keep things as simple as possible. It has very basic input detection (using the arrow keys to move, jump and fall through one way platforms) and a simple character sprite/Animator setup. This should be simple enough for anyone with a rudimentry knowledge of Unity to read through and understand.
 
 
 
@@ -31,19 +24,6 @@ You can then tweak the *totalHorizontalRays* and *totalVerticalRays* to your lik
 To move the player around just call *move* and provide it a delta movement (the physical distance the player should move this frame). You can subscribe to the *onControllerCollidedEvent* to be notified of all collisions if you need them.
 
 In order to be able to receive trigger events (onTriggerEnter/Stay/Exit) the CharacterController2D needs to be told which layers it should interact with. Select the layers that should fire trigger events via the *triggerMask* field in the inspector.
-
-
-
-Special Notes for Using Physics-based Movement
-=====================
-
-If you set *usePhysicsForMovement* to true some special consideration need to be made:
-
-* the RigidBody2D on the CharacterController2D should still be kinematic
-* the RigidBody2D on the CharacterController2D should have Interpolate set to None or Extrapolate
-* all the usual Unity rules for physics-based movement will also apply: you should only move the CharacterController2D in FixedUpdate, dont gather input in FixedUpdate, etc
-* you may want to experiment with the TimeManager's Fixed Timestep value to get better results
-
 
 
 License
