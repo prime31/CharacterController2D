@@ -266,6 +266,7 @@ public class CharacterController2D : MonoBehaviour
 			moveVertically( ref deltaMovement );
 
 		// move then update our state
+		deltaMovement.z = 0;
 		transform.Translate( deltaMovement, Space.World );
 
 		// only calculate velocity if we have a non-zero deltaTime
