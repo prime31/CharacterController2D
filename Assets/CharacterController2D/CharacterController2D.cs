@@ -375,6 +375,13 @@ public class CharacterController2D : MonoBehaviour
 				if( i == 0 && handleHorizontalSlope( ref deltaMovement, Vector2.Angle( _raycastHit.normal, Vector2.up ) ) )
 				{
 					_raycastHitsThisFrame.Add( _raycastHit );
+					// if we weren't grounded last frame, that means we're landing on a slope horizontally.
+					// this ensures that we stay flush to that slope
+					if ( !collisionState.wasGroundedLastFrame )
+					{
+						float flushDistance = Mathf.Sign( deltaMovement.x ) * ( _raycastHit.distance - skinWidth );
+						transform.Translate( new Vector2( flushDistance, 0 ) );
+					}
 					break;
 				}
 
