@@ -462,6 +462,7 @@ public class CharacterController2D : MonoBehaviour
 
 				_isGoingUpSlope = true;
 				collisionState.below = true;
+				collisionState.slopeAngle = -angle;
 			}
 		}
 		else // too steep. get out of here
@@ -560,7 +561,8 @@ public class CharacterController2D : MonoBehaviour
 				var slopeModifier = slopeSpeedMultiplier.Evaluate( -angle );
 				// we add the extra downward movement here to ensure we "stick" to the surface below
 				deltaMovement.y += _raycastHit.point.y - slopeRay.y - skinWidth;
-				deltaMovement.x *= slopeModifier;
+				deltaMovement = new Vector3( 0, deltaMovement.y, 0 ) +
+                                ( Quaternion.AngleAxis( -angle, Vector3.forward ) * new Vector3( deltaMovement.x * slopeModifier, 0, 0 ) );
 				collisionState.movingDownSlope = true;
 				collisionState.slopeAngle = angle;
 			}
