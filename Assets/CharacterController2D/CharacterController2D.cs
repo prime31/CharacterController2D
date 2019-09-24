@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Prime31 {
 
-[RequireComponent( typeof( BoxCollider2D ), typeof( Rigidbody2D ) )]
+[RequireComponent( typeof( BoxCollider2D ))]
 public class CharacterController2D : MonoBehaviour
 {
 	#region internal types
@@ -138,8 +138,6 @@ public class CharacterController2D : MonoBehaviour
 	public new Transform transform;
 	[HideInInspector][NonSerialized]
 	public BoxCollider2D boxCollider;
-	[HideInInspector][NonSerialized]
-	public Rigidbody2D rigidBody2D;
 
 	[HideInInspector][NonSerialized]
 	public CharacterCollisionState2D collisionState = new CharacterCollisionState2D();
@@ -187,7 +185,6 @@ public class CharacterController2D : MonoBehaviour
 		// cache some components
 		transform = GetComponent<Transform>();
 		boxCollider = GetComponent<BoxCollider2D>();
-		rigidBody2D = GetComponent<Rigidbody2D>();
 
 		// here, we trigger our properties that have setters with bodies
 		skinWidth = _skinWidth;
